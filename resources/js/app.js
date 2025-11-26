@@ -8,7 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 // We've removed AdminLTE JavaScript completely
 // Instead, we're implementing the necessary functionality directly in Vue
 
-const appName = import.meta.env.VITE_APP_NAME || 'UPG MIS';
+const appName = import.meta.env.VITE_APP_NAME || 'Zanzibar Fly System';
 
 createInertiaApp({
     title: (title) => title ? `${title} - ${appName}` : appName,

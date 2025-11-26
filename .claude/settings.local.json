@@ -3,7 +3,14 @@
     "allow": [
       "Bash(php artisan route:list:*)",
       "Read(//c/laragon/www/azam_tv_bulk_sms/resources/js/**)",
-      "Read(//c/laragon/www/azam_tv_bulk_sms/resources/js/Layouts/**)"
+      "Read(//c/laragon/www/azam_tv_bulk_sms/resources/js/Layouts/**)",
+      "Bash(php artisan make:migration:*)",
+      "Bash(php artisan:*)",
+      "Bash(curl:*)",
+      "Bash(mysql:*)",
+      "Bash(npm run dev:*)",
+      "Bash(composer:*)",
+      "Bash(php -r \"\nuse Illuminate\\Support\\Facades\\DB;\nrequire ''vendor/autoload.php'';\n$app = require_once ''bootstrap/app.php'';\n$app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();\n$columns = DB::select(''SHOW COLUMNS FROM staff_medical_certificates'');\nforeach($columns as $column) {\n    echo $column->Field . '' - '' . $column->Type . PHP_EOL;\n}\n\")"
     ],
     "deny": [],
     "ask": []

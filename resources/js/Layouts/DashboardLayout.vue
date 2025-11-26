@@ -54,8 +54,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="/" class="brand-link text-center py-3">
-        <img src="/images/logo.png" alt="Azam TV Logo" class="img-fluid" style="max-width: 140px; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto;">
-        <!-- <span class="brand-text font-weight-bold" style="font-size: 1.2rem;">SMS</span> -->
+        <ApplicationLogo :size="48" :showText="true" />
       </a>
 
       <!-- Sidebar -->
@@ -124,9 +123,34 @@
                 </li>
               </ul>
             </li>
+            <!-- Staff Management Menu -->
+            <li class="nav-item">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('staff')">
+                <i class="nav-icon fas fa-users"></i>
+                <p>
+                  Staff Management
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview" :style="{ display: isMenuOpen('staff') ? 'block' : 'none' }">
+                <li class="nav-item">
+                  <Link :href="route('staff.index')" class="nav-link">
+                    <i class="fas fa-list nav-icon"></i>
+                    <p>All Staff</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('staff.create')" class="nav-link">
+                    <i class="fas fa-user-plus nav-icon"></i>
+                    <p>Add New Staff</p>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
             <li class="nav-item">
               <a href="/recipients" class="nav-link">
-                <i class="nav-icon fas fa-users"></i>
+                <i class="nav-icon fas fa-address-book"></i>
                 <p>Recipients</p>
               </a>
             </li>
@@ -157,7 +181,7 @@
 
     <!-- Main Footer -->
     <footer class="main-footer">
-      <strong>Copyright &copy; {{ new Date().getFullYear() }} <a href="#">UPG MIS</a>.</strong>
+      <strong>Copyright &copy; {{ new Date().getFullYear() }} <a href="#">Zanzibar Fly System</a>.</strong>
       All rights reserved.
       <div class="float-right d-none d-sm-inline-block">
         <b>Version</b> 1.0.0
@@ -170,6 +194,7 @@
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import { router, usePage, Link } from '@inertiajs/vue3';
 import LoadingBar from '@/Components/LoadingBar.vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
 const props = defineProps({
   title: {

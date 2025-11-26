@@ -112,7 +112,7 @@ function deleteSms(sms) {
         <div class="card bg-primary">
           <div class="card-body d-flex align-items-center p-4">
             <div>
-              <h2 class="mb-1 text-white">Welcome to Azam TV Bulk SMS Dashboard</h2>
+              <h3 class="mb-1 text-white">Welcome to Zanzibar Fly System Dashboard</h3>
               <p class="mb-0 text-white opacity-75">Monitor your SMS campaigns and analytics in one place</p>
             </div>
             <div class="ml-auto">
