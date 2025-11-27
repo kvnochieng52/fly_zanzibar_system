@@ -181,7 +181,8 @@ class StaffController extends Controller
             'medicalCertificates.medicalClass',
             'medicalCertificates.medicalStatus',
             'proficiencies.proficiencyType',
-            'typeRatings'
+            'typeRatings',
+            'staffFiles'
         ]);
 
         return Inertia::render('Staff/Show', [
@@ -853,6 +854,87 @@ class StaffController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Proficiency deletion failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Store a new file for staff member
+     */
+    public function storeFile(Request $request, Staff $staff)
+    {
+        $validated = $request->validate([
+            'file' => 'required|file|max:20480', // 20MB max
+            'file_name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'category' => 'required|in:general,contract,certificate,identification,resume,other',
+            'is_public' => 'boolean'
+        ]);
+
+        try {
+            $file = $request->file('file');
+            $originalName = $file->getClientOriginalName();
+            $fileName = time() . '_' . $staff->id . '_' . $originalName;
+            $filePath = $file->storeAs('staff_files', $fileName, 'public');
+
+            $staffFile = $staff->staffFiles()->create([
+                'file_name' => $validated['file_name'],
+                'original_name' => $originalName,
+                'file_path' => $filePath,
+                'file_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+                'description' => $validated['description'],
+                'category' => $validated['category'],
+                'is_public' => $request->boolean('is_public', false),
+                'uploaded_by' => auth()->user()->name ?? 'System'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'file' => $staffFile,
+                'message' => 'File uploaded successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Download a staff file
+     */
+    public function downloadFile(Staff $staff, $fileId)
+    {
+        $file = $staff->staffFiles()->findOrFail($fileId);
+
+        if (!Storage::disk('public')->exists($file->file_path)) {
+            abort(404, 'File not found');
+        }
+
+        return Storage::disk('public')->download($file->file_path, $file->original_name);
+    }
+
+    /**
+     * Delete a staff file
+     */
+    public function destroyFile(Staff $staff, $fileId)
+    {
+        try {
+            $file = $staff->staffFiles()->findOrFail($fileId);
+            $file->delete(); // Boot method will handle file deletion
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File deletion failed: ' . $e->getMessage()
             ], 500);
         }
     }

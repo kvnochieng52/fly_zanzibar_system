@@ -59,6 +59,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/staff/{staff}/proficiencies', [StaffController::class, 'storeProficiency'])->name('staff.proficiencies.store');
     Route::put('/staff/{staff}/proficiencies/{proficiency}', [StaffController::class, 'updateProficiency'])->name('staff.proficiencies.update');
     Route::delete('/staff/{staff}/proficiencies/{proficiency}', [StaffController::class, 'destroyProficiency'])->name('staff.proficiencies.destroy');
+
+    // Staff Files Management
+    Route::post('/staff/{staff}/files', [StaffController::class, 'storeFile'])->name('staff.files.store');
+    Route::get('/staff/{staff}/files/{file}/download', [StaffController::class, 'downloadFile'])->name('staff.files.download');
+    Route::delete('/staff/{staff}/files/{file}', [StaffController::class, 'destroyFile'])->name('staff.files.destroy');
 });
 
 require __DIR__.'/auth.php';

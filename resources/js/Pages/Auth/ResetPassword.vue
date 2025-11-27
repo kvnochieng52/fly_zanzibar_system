@@ -1,5 +1,7 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+
+const { props: pageProps } = usePage();
 
 const props = defineProps({
     email: {
@@ -33,8 +35,8 @@ const submit = () => {
         <div class="login-box">
             <!-- Logo -->
             <div class="login-logo text-center mb-4">
-                <img src="/images/logo.png" alt="UPG MIS Logo" class="img-fluid mb-2" style="max-width: 140px;">
-                <h1 class="h5 font-weight-bold">UPG MIS</h1>
+                <img src="/images/logo.png" :alt="pageProps.appName + ' Logo'" class="img-fluid mb-2" style="max-width: 140px;">
+                <h1 class="h5 font-weight-bold">{{ pageProps.appName }}</h1>
             </div>
             
             <!-- Reset Password Card -->

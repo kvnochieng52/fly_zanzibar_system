@@ -131,6 +131,17 @@
               <i class="fas fa-user-md me-2"></i>Medical
             </button>
           </li>
+          <li class="nav-item" role="presentation">
+            <button
+              :class="['nav-link', { active: activeTab === 'files' }]"
+              id="files-tab"
+              type="button"
+              role="tab"
+              @click="activeTab = 'files'"
+            >
+              <i class="fas fa-file me-2"></i>Files
+            </button>
+          </li>
         </ul>
       </div>
 
@@ -856,6 +867,66 @@
               <p>No medical certificates recorded</p>
             </div>
           </div>
+
+          <!-- Files Tab -->
+          <div v-show="activeTab === 'files'" id="files" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="mb-0">Staff Files</h5>
+              <button class="btn btn-primary btn-sm" @click="showFileModal = true">
+                <i class="fas fa-upload me-1"></i>Upload File
+              </button>
+            </div>
+
+            <div v-if="staff.staff_files && staff.staff_files.length > 0">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>File Name</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>File Type</th>
+                      <th>Size</th>
+                      <th>Uploaded</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in staff.staff_files" :key="file.id">
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <i :class="file.file_icon" class="me-2"></i>
+                          <span class="fw-medium">{{ file.original_name }}</span>
+                        </div>
+                      </td>
+                      <td>{{ file.description || 'No description' }}</td>
+                      <td>
+                        <span class="badge bg-secondary">{{ file.category || 'General' }}</span>
+                      </td>
+                      <td>{{ file.file_type?.toUpperCase() || 'Unknown' }}</td>
+                      <td>{{ file.file_size_human }}</td>
+                      <td>{{ formatDate(file.created_at) }}</td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <a :href="file.download_url" class="btn btn-outline-primary" title="Download File">
+                            <i class="fas fa-download"></i>
+                          </a>
+                          <button class="btn btn-outline-danger" @click="deleteFile(file.id)" title="Delete File">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div v-else class="text-center py-5 text-muted">
+              <i class="fas fa-file fa-3x mb-3"></i>
+              <p>No files uploaded</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1233,6 +1304,69 @@
         </div>
       </div>
     </div>
+
+    <!-- File Upload Modal -->
+    <div v-if="showFileModal" class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" @click="showFileModal = false">
+      <div class="modal-dialog modal-lg" @click.stop>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Upload Staff File</h5>
+            <button type="button" class="btn-close" @click="closeFileModal"></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="saveFile">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">File Name</label>
+                  <input v-model="fileForm.file_name" type="text" class="form-control" placeholder="Enter a descriptive name for this file" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">File Category</label>
+                  <select v-model="fileForm.category" class="form-select custom-select" required>
+                    <option value="">Select Category</option>
+                    <option value="general">General</option>
+                    <option value="contract">Contract</option>
+                    <option value="certificate">Certificate</option>
+                    <option value="identification">Identification</option>
+                    <option value="resume">Resume</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Visibility</label>
+                  <select v-model="fileForm.is_public" class="form-select custom-select" required>
+                    <option :value="false">Private (HR Only)</option>
+                    <option :value="true">Public (Staff Accessible)</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Description</label>
+                  <input v-model="fileForm.description" type="text" class="form-control" placeholder="Brief description of the file">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Select File</label>
+                  <input @change="handleFileSelect" type="file" class="form-control" required>
+                  <small class="form-text text-muted">Maximum file size: 10MB. Allowed types: PDF, DOC, DOCX, JPG, PNG, XLS, XLSX</small>
+                </div>
+                <div class="col-12" v-if="fileForm.file">
+                  <div class="alert alert-info">
+                    <i class="fas fa-file me-2"></i>
+                    <strong>Selected:</strong> {{ fileForm.file.name }} ({{ formatFileSize(fileForm.file.size) }})
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeFileModal">Cancel</button>
+            <button type="button" class="btn btn-primary" @click="saveFile" :disabled="fileSaving">
+              <span v-if="fileSaving" class="spinner-border spinner-border-sm me-2"></span>
+              {{ fileSaving ? 'Uploading...' : 'Upload File' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </DashboardLayout>
 </template>
 
@@ -1327,6 +1461,17 @@ const proficiencyForm = ref({
   notes: '',
   document_file: null,
   is_current: true
+})
+
+// File modal and form
+const showFileModal = ref(false)
+const fileSaving = ref(false)
+const fileForm = ref({
+  file_name: '',
+  description: '',
+  category: '',
+  is_public: false,
+  file: null
 })
 
 // Computed properties
@@ -1715,6 +1860,98 @@ const saveProficiency = async () => {
     alert('Error saving proficiency. Please try again.')
   } finally {
     proficiencySaving.value = false
+  }
+}
+
+// File methods
+const closeFileModal = () => {
+  showFileModal.value = false
+  fileForm.value = {
+    file_name: '',
+    description: '',
+    category: '',
+    is_public: false,
+    file: null
+  }
+}
+
+const handleFileSelect = (event) => {
+  fileForm.value.file = event.target.files[0]
+}
+
+const formatFileSize = (bytes) => {
+  if (!bytes) return '0 Bytes'
+
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const saveFile = async () => {
+  if (!fileForm.value.file) {
+    alert('Please select a file')
+    return
+  }
+
+  fileSaving.value = true
+
+  try {
+    const formData = new FormData()
+    formData.append('file', fileForm.value.file)
+    formData.append('file_name', fileForm.value.file_name)
+    formData.append('description', fileForm.value.description)
+    formData.append('category', fileForm.value.category)
+    formData.append('is_public', fileForm.value.is_public ? '1' : '0')
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
+
+    const response = await fetch(`/staff/${props.staff.id}/files`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    })
+
+    if (response.ok) {
+      closeFileModal()
+      window.location.reload()
+    } else {
+      const errorData = await response.json()
+      alert('Error uploading file: ' + (errorData.message || 'Unknown error'))
+    }
+  } catch (error) {
+    console.error('File upload error:', error)
+    alert('Error uploading file. Please try again.')
+  } finally {
+    fileSaving.value = false
+  }
+}
+
+const deleteFile = async (fileId) => {
+  if (!confirm('Are you sure you want to delete this file?')) {
+    return
+  }
+
+  try {
+    const response = await fetch(`/staff/${props.staff.id}/files/${fileId}`, {
+      method: 'DELETE',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
+    })
+
+    if (response.ok) {
+      window.location.reload()
+    } else {
+      const errorData = await response.json()
+      alert('Error deleting file: ' + (errorData.message || 'Unknown error'))
+    }
+  } catch (error) {
+    console.error('File delete error:', error)
+    alert('Error deleting file. Please try again.')
   }
 }
 </script>

@@ -207,6 +207,11 @@ class Staff extends Model
         return $this->hasMany(StaffProficiency::class)->where('is_current', true);
     }
 
+    public function staffFiles(): HasMany
+    {
+        return $this->hasMany(StaffFile::class);
+    }
+
     // Accessors
     public function getFullNameAttribute(): string
     {

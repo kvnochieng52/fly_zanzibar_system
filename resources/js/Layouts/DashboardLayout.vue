@@ -51,11 +51,25 @@
     <!-- /.navbar -->
 
     <!-- Main Sidebar Container -->
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <aside class="main-sidebar" style="background-color: #e9ecef; box-shadow: none; border-right: 1px solid #d6d9dc;">
       <!-- Brand Logo -->
-      <a href="/" class="brand-link text-center py-3">
-        <ApplicationLogo :size="48" :showText="true" />
-      </a>
+      <div class="brand-link text-center py-3" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+        <!-- Logo at full width -->
+        <div class="logo-container mb-2">
+          <img
+            src="/images/logo.png"
+            alt="Fly Zanzibar Aviation Logo"
+            class="img-fluid"
+            style="max-width: 140px; height: auto;"
+          />
+        </div>
+        <!-- Title below logo, smaller size -->
+        <div class="brand-title">
+          <span class="font-weight-bold" style="font-size: 12px; color: #495057; letter-spacing: 0.5px;">
+            FLY ZANZIBAR AVIATION
+          </span>
+        </div>
+      </div>
 
       <!-- Sidebar -->
       <div class="sidebar">
@@ -544,6 +558,70 @@ body.dark-mode .dropdown-item:hover {
 
 body.dark-mode .dropdown-divider {
   border-color: #444;
+}
+
+/* Light sidebar styling */
+.main-sidebar {
+  background-color: #e9ecef !important;
+  box-shadow: none !important;
+  border-right: 1px solid #d6d9dc !important;
+}
+
+.main-sidebar .sidebar {
+  background-color: #e9ecef !important;
+}
+
+/* Navigation styling for light sidebar */
+.main-sidebar .nav-sidebar .nav-link {
+  color: #495057 !important;
+}
+
+.main-sidebar .nav-sidebar .nav-link:hover {
+  background-color: rgba(0, 140, 238, 0.1) !important;
+  color: #008cee !important;
+}
+
+.main-sidebar .nav-sidebar .nav-link.active {
+  background-color: #008cee !important;
+  color: white !important;
+}
+
+.main-sidebar .nav-sidebar .nav-icon {
+  color: #6c757d !important;
+}
+
+.main-sidebar .nav-sidebar .nav-link:hover .nav-icon {
+  color: #008cee !important;
+}
+
+.main-sidebar .nav-sidebar .nav-link.active .nav-icon {
+  color: white !important;
+}
+
+/* User panel styling for light sidebar */
+.main-sidebar .user-panel .info a {
+  color: #495057 !important;
+}
+
+.main-sidebar .user-panel .image i {
+  color: #6c757d !important;
+}
+
+/* Submenu styling */
+.main-sidebar .nav-treeview {
+  background-color: #ffffff !important;
+  border-left: 3px solid #e9ecef;
+  margin-left: 10px;
+}
+
+.main-sidebar .nav-treeview .nav-link {
+  color: #6c757d !important;
+  padding-left: 2rem !important;
+}
+
+.main-sidebar .nav-treeview .nav-link:hover {
+  background-color: rgba(0, 140, 238, 0.05) !important;
+  color: #008cee !important;
 }
 
 /* Make sure dropdown toggle has a pointer cursor */
