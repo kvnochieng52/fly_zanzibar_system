@@ -26,11 +26,11 @@ return new class extends Migration
 
         // Insert default statuses
         DB::table('quotation_statuses')->insert([
-            ['name' => 'Draft', 'code' => 'DRAFT', 'color' => '#6c757d', 'description' => 'Quote is being prepared', 'is_default' => true, 'sort_order' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Sent', 'code' => 'SENT', 'color' => '#17a2b8', 'description' => 'Quote has been sent to customer', 'sort_order' => 2, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Accepted', 'code' => 'ACCEPTED', 'color' => '#28a745', 'description' => 'Quote has been accepted by customer', 'sort_order' => 3, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Rejected', 'code' => 'REJECTED', 'color' => '#dc3545', 'description' => 'Quote has been rejected by customer', 'sort_order' => 4, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Expired', 'code' => 'EXPIRED', 'color' => '#6f42c1', 'description' => 'Quote has passed its validity period', 'sort_order' => 5, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Draft', 'code' => 'DRAFT', 'color' => '#6c757d', 'description' => 'Quote is being prepared', 'is_default' => true, 'sort_order' => 1, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Sent', 'code' => 'SENT', 'color' => '#17a2b8', 'description' => 'Quote has been sent to customer', 'is_default' => false, 'sort_order' => 2, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Accepted', 'code' => 'ACCEPTED', 'color' => '#28a745', 'description' => 'Quote has been accepted by customer', 'is_default' => false, 'sort_order' => 3, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Rejected', 'code' => 'REJECTED', 'color' => '#dc3545', 'description' => 'Quote has been rejected by customer', 'is_default' => false, 'sort_order' => 4, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Expired', 'code' => 'EXPIRED', 'color' => '#6f42c1', 'description' => 'Quote has passed its validity period', 'is_default' => false, 'sort_order' => 5, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 

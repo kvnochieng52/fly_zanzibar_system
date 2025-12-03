@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,7 +14,7 @@ class QuotationController extends Controller
      */
     public function index()
     {
-        // Return empty data for now until tables are created
+        // For now return empty until Quotation model is created
         $quotations = [
             'data' => [],
             'links' => [],
@@ -39,14 +41,16 @@ class QuotationController extends Controller
      */
     public function create()
     {
-        // Return empty data for now until tables are created
-        $customers = [];
-        $currencies = [
-            ['id' => 1, 'code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$'],
-            ['id' => 2, 'code' => 'EUR', 'name' => 'Euro', 'symbol' => '€'],
-            ['id' => 3, 'code' => 'GBP', 'name' => 'British Pound', 'symbol' => '£'],
-            ['id' => 4, 'code' => 'TZS', 'name' => 'Tanzanian Shilling', 'symbol' => 'TSh']
-        ];
+        $customers = Customer::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('company_name')
+            ->orderBy('first_name')
+            ->get(['id', 'type', 'first_name', 'last_name', 'company_name', 'email']);
+
+        $currencies = Currency::where('is_active', true)
+            ->orderBy('code')
+            ->get(['id', 'code', 'name', 'symbol']);
+
         $statuses = [
             ['id' => 1, 'name' => 'Draft', 'code' => 'DRAFT'],
             ['id' => 2, 'name' => 'Sent', 'code' => 'SENT'],
@@ -84,12 +88,12 @@ class QuotationController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        // For now, simulate successful creation since tables don't exist yet
-        // In real implementation, this would be:
-        // $quotation = Quotation::create($validated + ['created_by' => auth()->id()]);
+        // For now, simulate successful creation since Quotation model doesn't exist yet
+        // TODO: Create Quotation model and implement:
+        // $quotation = Quotation::create($validated + ['created_by' => auth()->id() ?? 1]);
 
         return redirect()->route('quotations.index')->with('success',
-            'Quotation "' . $validated['quote_number'] . '" has been created successfully. This will be saved to database once tables are set up.'
+            'Quotation "' . $validated['quote_number'] . '" has been created successfully. Implementation pending Quotation model creation.'
         );
     }
 

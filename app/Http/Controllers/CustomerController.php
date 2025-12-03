@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,20 +14,14 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        // Return empty data for now until tables are created
-        $customers = [
-            'data' => [],
-            'links' => [],
-            'total' => 0,
-            'from' => 0,
-            'to' => 0
-        ];
+        $customers = Customer::orderBy('created_at', 'desc')
+            ->paginate(20);
 
         $stats = [
-            'total' => 0,
-            'individual' => 0,
-            'corporate' => 0,
-            'active' => 0
+            'total' => Customer::count(),
+            'individual' => Customer::where('type', 'individual')->count(),
+            'corporate' => Customer::where('type', 'corporate')->count(),
+            'active' => Customer::where('is_active', true)->count()
         ];
 
         return Inertia::render('Customers/Index', [
@@ -39,12 +35,9 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        $currencies = [
-            ['id' => 1, 'code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$'],
-            ['id' => 2, 'code' => 'EUR', 'name' => 'Euro', 'symbol' => '€'],
-            ['id' => 3, 'code' => 'GBP', 'name' => 'British Pound', 'symbol' => '£'],
-            ['id' => 4, 'code' => 'TZS', 'name' => 'Tanzanian Shilling', 'symbol' => 'TSh']
-        ];
+        $currencies = Currency::where('is_active', true)
+            ->orderBy('code')
+            ->get(['id', 'code', 'name', 'symbol']);
 
         return Inertia::render('Customers/Create', [
             'currencies' => $currencies
@@ -89,15 +82,13 @@ class CustomerController extends Controller
 
         $validated = $request->validate($rules);
 
-        // For now, simulate successful creation since tables don't exist yet
-        // In real implementation, this would be:
-        // $customer = Customer::create($validated + ['created_by' => auth()->id()]);
-
-        // Simulate success response
-        session()->flash('success', 'Customer created successfully!');
+        // Create customer in database
+        $customer = Customer::create($validated + [
+            'created_by' => auth()->id() ?? 1 // Default to user ID 1 if not authenticated
+        ]);
 
         return redirect()->route('customers.index')->with('success',
-            'Customer "' . ($validated['company_name'] ?? $validated['first_name'] . ' ' . $validated['last_name']) . '" has been created successfully. This will be saved to database once tables are set up.'
+            'Customer "' . ($customer->company_name ?? $customer->first_name . ' ' . $customer->last_name) . '" has been created successfully.'
         );
     }
 
