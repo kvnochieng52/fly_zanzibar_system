@@ -1,0 +1,1030 @@
+<template>
+  <Head :title="`Aircraft ${aircraft.registration_number}`" />
+
+  <DashboardLayout>
+    <!-- Page Header with Aircraft Details and Stats in One Row -->
+    <div class="row align-items-center mb-4">
+      <!-- Left Side: Aircraft Photo, Name, and Details -->
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center">
+          <div class="flex-shrink-0" style="width: 60px; height: 60px; margin-right: 12px;">
+            <div class="w-100 h-100 bg-primary d-flex align-items-center justify-content-center rounded">
+              <i class="fas fa-plane text-white fs-4"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1">
+            <nav aria-label="breadcrumb" class="mb-1">
+              <ol class="breadcrumb breadcrumb-sm mb-0">
+                <li class="breadcrumb-item">
+                  <Link :href="route('aircraft.index')" class="text-decoration-none">Aircraft</Link>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ aircraft.registration_number }}</li>
+              </ol>
+            </nav>
+            <h1 class="h5 mb-1 text-gray-900">{{ aircraft.manufacturer?.name }} {{ aircraft.model?.name }}</h1>
+            <div class="d-flex flex-column gap-1">
+              <span class="text-muted small">{{ aircraft.registration_number }} • S/N: {{ aircraft.serial_number }}</span>
+              <span
+                class="badge rounded-pill align-self-start small"
+                :style="{ backgroundColor: aircraft.status_color + '20' || '#6c757d20', color: aircraft.status_color || '#6c757d', border: '1px solid ' + (aircraft.status_color || '#6c757d') }"
+              >
+                {{ aircraft.status?.name || 'N/A' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Quick Stats -->
+      <div class="col-lg-8">
+        <div class="row">
+          <div class="col-4">
+            <div class="card border-0 shadow-sm h-100 stat-card stat-primary">
+              <div class="card-body d-flex align-items-center p-3">
+                <div class="stat-icon me-3">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="stat-label text-white-75 small">Total Hours</div>
+                  <div class="stat-value text-white fw-bold">{{ formatHours(aircraft.total_airframe_hours) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-4">
+            <div class="card border-0 shadow-sm h-100 stat-card stat-info">
+              <div class="card-body d-flex align-items-center p-3">
+                <div class="stat-icon me-3">
+                  <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="stat-label text-white-75 small">Total Cycles</div>
+                  <div class="stat-value text-white fw-bold">{{ aircraft.total_cycles || 0 }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-4">
+            <div class="card border-0 shadow-sm h-100 stat-card stat-warning">
+              <div class="card-body d-flex align-items-center p-3">
+                <div class="stat-icon me-3">
+                  <i class="fas fa-calendar"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="stat-label text-white-75 small">Aircraft Age</div>
+                  <div class="stat-value text-white fw-bold small">{{ aircraft.age_in_years || 0 }} years</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation with Action Buttons -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-transparent">
+        <div class="d-flex justify-content-between align-items-center">
+          <ul class="nav nav-pills" id="aircraftTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              :class="['nav-link', { active: activeTab === 'overview' }]"
+              id="overview-tab"
+              type="button"
+              role="tab"
+              @click="activeTab = 'overview'"
+            >
+              <i class="fas fa-info-circle me-2"></i>Overview
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              :class="['nav-link', { active: activeTab === 'maintenance' }]"
+              id="maintenance-tab"
+              type="button"
+              role="tab"
+              @click="activeTab = 'maintenance'"
+            >
+              <i class="fas fa-wrench me-2"></i>Maintenance
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              :class="['nav-link', { active: activeTab === 'documents' }]"
+              id="documents-tab"
+              type="button"
+              role="tab"
+              @click="activeTab = 'documents'"
+            >
+              <i class="fas fa-file-alt me-2"></i>Documents
+            </button>
+          </li>
+        </ul>
+
+          <!-- Action Buttons on the Right -->
+          <div class="d-flex gap-2">
+            <Link
+              :href="route('aircraft.edit', aircraft.id)"
+              class="btn btn-warning btn-sm"
+            >
+              <i class="fas fa-edit me-1"></i>Edit
+            </Link>
+            <button
+              v-if="activeTab === 'documents'"
+              class="btn btn-primary btn-sm"
+              type="button"
+              @click="showAddDocumentModal = true"
+            >
+              <i class="fas fa-file-plus me-1"></i>Add Document
+            </button>
+            <Link
+              :href="route('aircraft.index')"
+              class="btn btn-outline-secondary btn-sm"
+            >
+              <i class="fas fa-arrow-left me-1"></i>Back
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="tab-content" id="aircraftTabsContent">
+          <!-- Overview Tab -->
+          <div v-show="activeTab === 'overview'" id="overview" role="tabpanel">
+            <div class="row mb-4">
+              <div class="col-lg-8">
+                <!-- Aircraft Information Card -->
+                <div class="card border-0 shadow-sm mb-3">
+                  <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0 fw-bold">
+                      <i class="fas fa-plane text-primary me-2"></i>Aircraft Information
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-semibold text-muted">Status</label>
+                <div>
+                  <span
+                    class="badge rounded-pill fs-6 px-3 py-2"
+                    :style="{
+                      backgroundColor: aircraft.status_color + '20',
+                      color: aircraft.status_color,
+                      border: '1px solid ' + aircraft.status_color,
+                    }"
+                  >
+                    {{ aircraft.status?.name }}
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-semibold text-muted">Home Base</label>
+                <div class="fw-medium">{{ aircraft.home_base }}</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-semibold text-muted">Year of Manufacture</label>
+                <div class="fw-medium">{{ aircraft.year_of_manufacture }} ({{ aircraft.age_in_years }} years old)</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-semibold text-muted">Total Hours & Cycles</label>
+                <div class="fw-medium">
+                  {{ formatHours(aircraft.total_airframe_hours) }} hours • {{ aircraft.total_cycles }} cycles
+                </div>
+              </div>
+              <div v-if="aircraft.seating_configuration" class="col-md-12 mb-3">
+                <label class="form-label small fw-semibold text-muted">Seating Configuration</label>
+                <div class="fw-medium">{{ aircraft.seating_configuration }}</div>
+              </div>
+              <div v-if="aircraft.notes" class="col-md-12 mb-3">
+                <label class="form-label small fw-semibold text-muted">Notes</label>
+                <div class="text-muted">{{ aircraft.notes }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <!-- Compliance Status Card -->
+        <div class="card border-0 shadow-sm mb-3">
+          <div class="card-header bg-white border-bottom-0 py-3">
+            <h5 class="mb-0 fw-bold">
+              <i class="fas fa-shield-alt text-success me-2"></i>Compliance Status
+            </h5>
+          </div>
+          <div class="card-body text-center">
+            <div class="compliance-chart mb-3">
+              <div
+                class="progress-circle"
+                :style="`--progress: ${complianceStatus.compliance_percentage}`"
+              >
+                <div class="progress-text">
+                  <div class="percentage">{{ complianceStatus.compliance_percentage }}%</div>
+                  <div class="label small text-muted">Compliant</div>
+                </div>
+              </div>
+            </div>
+            <div class="row text-center">
+              <div class="col-3">
+                <div class="stat-number text-success">{{ complianceStatus.valid }}</div>
+                <div class="stat-label small text-muted">Valid</div>
+              </div>
+              <div class="col-3">
+                <div class="stat-number text-warning">{{ complianceStatus.expiring }}</div>
+                <div class="stat-label small text-muted">Expiring</div>
+              </div>
+              <div class="col-3">
+                <div class="stat-number text-danger">{{ complianceStatus.expired }}</div>
+                <div class="stat-label small text-muted">Expired</div>
+              </div>
+              <div class="col-3">
+                <div class="stat-number text-info">{{ complianceStatus.pending }}</div>
+                <div class="stat-label small text-muted">Pending</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photos Card -->
+        <div v-if="aircraft.photos && aircraft.photos.length > 0" class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-bottom-0 py-3">
+            <h5 class="mb-0 fw-bold">
+              <i class="fas fa-images text-info me-2"></i>Photos
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="photo-gallery">
+              <div
+                v-for="(photo, index) in aircraft.photos"
+                :key="index"
+                class="photo-thumbnail mb-2"
+              >
+                <img
+                  :src="`/storage/${photo}`"
+                  :alt="`Aircraft ${aircraft.registration_number} photo ${index + 1}`"
+                  class="img-fluid rounded cursor-pointer"
+                  @click="showPhotoModal(photo)"
+                />
+              </div>
+            </div>
+          </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Maintenance Tab -->
+          <div v-show="activeTab === 'maintenance'" id="maintenance" role="tabpanel">
+            <!-- Maintenance Summary Cards -->
+            <div class="row mb-4">
+              <!-- Current Maintenance Status -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-success">
+                  <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon me-3">
+                      <i class="fas fa-check"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="stat-label text-white-75 small">Current</div>
+                      <div class="stat-value text-white fw-bold">8 items</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Due Soon -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-warning">
+                  <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon me-3">
+                      <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="stat-label text-white-75 small">Due Soon</div>
+                      <div class="stat-value text-white fw-bold">2 items</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Overdue -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-danger">
+                  <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon me-3">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="stat-label text-white-75 small">Overdue</div>
+                      <div class="stat-value text-white fw-bold">0 items</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Work Orders -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-primary">
+                  <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon me-3">
+                      <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="stat-label text-white-75 small">Active Work Orders</div>
+                      <div class="stat-value text-white fw-bold">1 item</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upcoming Maintenance -->
+            <div class="card border-0 shadow-sm mb-4">
+              <div class="card-header bg-white border-bottom-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-calendar-alt text-warning me-2"></i>Upcoming Maintenance
+                  </h5>
+                  <button class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus me-1"></i>Schedule Maintenance
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Type</th>
+                        <th>Due By</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <div class="maintenance-type-icon me-2 bg-warning bg-opacity-10 rounded p-2">
+                              <i class="fas fa-wrench text-warning"></i>
+                            </div>
+                            <div>
+                              <div class="fw-medium">A-Check</div>
+                              <div class="small text-muted">Line Maintenance</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="small">
+                            <div>1,450 hours</div>
+                            <div class="text-muted">15 hours remaining</div>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="badge bg-warning">Due Soon</span>
+                        </td>
+                        <td>
+                          <span class="badge bg-danger">High</span>
+                        </td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary">
+                              <i class="fas fa-calendar-plus"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Work Orders -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white border-bottom-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-clipboard-list text-primary me-2"></i>Active Work Orders
+                  </h5>
+                  <button class="btn btn-sm btn-success">
+                    <i class="fas fa-plus me-1"></i>Create Work Order
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="text-center py-5">
+                  <i class="fas fa-clipboard-list text-muted mb-3" style="font-size: 3rem"></i>
+                  <h6 class="text-muted">No active work orders</h6>
+                  <p class="text-muted mb-3">Create work orders to track maintenance tasks and monitor progress.</p>
+                  <button class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Create First Work Order
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents Tab -->
+          <div v-show="activeTab === 'documents'" id="documents" role="tabpanel">
+            <!-- Documents Section -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom-0 py-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 fw-bold">
+            <i class="fas fa-file-alt text-warning me-2"></i>Compliance Documents
+          </h5>
+          <button
+            class="btn btn-sm btn-primary"
+            @click="showAddDocumentModal = true"
+          >
+            <i class="fas fa-plus me-1"></i>Add Document
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div v-if="Object.keys(documentsByType).length === 0" class="text-center py-5">
+          <i class="fas fa-file-alt text-muted mb-3" style="font-size: 3rem"></i>
+          <h6 class="text-muted">No documents uploaded</h6>
+          <p class="text-muted mb-3">Upload compliance documents to track expiry dates and maintain regulatory compliance.</p>
+          <button
+            class="btn btn-primary"
+            @click="showAddDocumentModal = true"
+          >
+            <i class="fas fa-plus me-2"></i>Add First Document
+          </button>
+        </div>
+
+        <div v-else>
+          <div
+            v-for="(documents, docType) in documentsByType"
+            :key="docType"
+            class="document-section mb-4"
+          >
+            <h6 class="section-title mb-3">
+              <i class="fas fa-folder-open me-2"></i>{{ docType }}
+              <span class="badge bg-light text-dark ms-2">{{ documents.length }}</span>
+            </h6>
+
+            <div class="row">
+              <div
+                v-for="document in documents"
+                :key="document.id"
+                class="col-lg-6 mb-3"
+              >
+                <div class="document-card p-3 border rounded">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center mb-1">
+                        <span
+                          class="compliance-indicator me-2"
+                          :class="getDocumentStatusClass(document)"
+                          :title="getDocumentStatusTitle(document)"
+                        ></span>
+                        <strong class="document-number">{{ document.document_number || 'No number' }}</strong>
+                      </div>
+                      <div v-if="document.issuing_authority" class="small text-muted mb-1">
+                        <i class="fas fa-building me-1"></i>{{ document.issuing_authority }}
+                      </div>
+                    </div>
+                    <div class="dropdown">
+                      <button
+                        class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        :id="`docDropdown${document.id}`"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <i class="fas fa-ellipsis-h"></i>
+                      </button>
+                      <ul class="dropdown-menu" :aria-labelledby="`docDropdown${document.id}`">
+                        <li>
+                          <button class="dropdown-item" @click="editDocument(document)">
+                            <i class="fas fa-edit me-2"></i>Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button class="dropdown-item text-danger" @click="deleteDocument(document)">
+                            <i class="fas fa-trash me-2"></i>Delete
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="document-dates">
+                    <div v-if="document.issue_date" class="small text-muted mb-1">
+                      <i class="fas fa-calendar me-1"></i>
+                      <strong>Issued:</strong> {{ formatDate(document.issue_date) }}
+                    </div>
+                    <div v-if="document.expiry_date" class="small mb-1" :class="getExpiryDateClass(document)">
+                      <i class="fas fa-calendar-times me-1"></i>
+                      <strong>Expires:</strong> {{ formatDate(document.expiry_date) }}
+                      <span v-if="document.days_until_expiry !== null" class="ms-1">
+                        ({{ document.days_until_expiry > 0 ? document.days_until_expiry + ' days' : 'Expired' }})
+                      </span>
+                    </div>
+                  </div>
+
+                  <div v-if="document.file_path" class="mt-2">
+                    <a
+                      :href="`/storage/${document.file_path}`"
+                      target="_blank"
+                      class="btn btn-sm btn-outline-info"
+                    >
+                      <i class="fas fa-download me-1"></i>View Document
+                    </a>
+                  </div>
+
+                  <div v-if="document.notes" class="mt-2">
+                    <small class="text-muted">{{ document.notes }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Document Modal -->
+    <div v-if="showAddDocumentModal" class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" @click="showAddDocumentModal = false">
+      <div class="modal-dialog modal-lg" @click.stop>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Compliance Document</h5>
+            <button type="button" class="btn-close" @click="closeDocumentModal"></button>
+          </div>
+          <form @submit.prevent="submitDocument">
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="documentType" class="form-label">Document Type</label>
+                  <select v-model="documentForm.document_type_id" id="documentType" class="form-select custom-select" required>
+                    <option value="">Select Document Type</option>
+                    <option
+                      v-for="docType in documentTypes"
+                      :key="docType.id"
+                      :value="docType.id"
+                    >
+                      {{ docType.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="documentNumber" class="form-label">Document Number</label>
+                  <input
+                    v-model="documentForm.document_number"
+                    type="text"
+                    id="documentNumber"
+                    class="form-control"
+                    placeholder="Enter document number"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="issueDate" class="form-label">Issue Date</label>
+                  <input
+                    v-model="documentForm.issue_date"
+                    type="date"
+                    id="issueDate"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="expiryDate" class="form-label">Expiry Date</label>
+                  <input
+                    v-model="documentForm.expiry_date"
+                    type="date"
+                    id="expiryDate"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-12 mb-3">
+                  <label for="issuingAuthority" class="form-label">Issuing Authority</label>
+                  <input
+                    v-model="documentForm.issuing_authority"
+                    type="text"
+                    id="issuingAuthority"
+                    class="form-control"
+                    placeholder="Enter issuing authority"
+                  />
+                </div>
+                <div class="col-12 mb-3">
+                  <label for="documentFile" class="form-label">Upload Document</label>
+                  <input
+                    type="file"
+                    id="documentFile"
+                    class="form-control"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    @change="handleFileUpload"
+                  />
+                  <div class="form-text">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</div>
+                </div>
+                <div class="col-12">
+                  <label for="documentNotes" class="form-label">Notes</label>
+                  <textarea
+                    v-model="documentForm.notes"
+                    id="documentNotes"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Additional notes or comments"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeDocumentModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
+                <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                Add Document
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Modal -->
+    <div class="modal fade" tabindex="-1" ref="photoModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Aircraft Photo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body p-0">
+            <img v-if="selectedPhoto" :src="`/storage/${selectedPhoto}`" class="img-fluid w-100" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </DashboardLayout>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { Head, Link, router } from "@inertiajs/vue3";
+import DashboardLayout from "@/Layouts/DashboardLayout.vue";
+
+const props = defineProps({
+  aircraft: Object,
+  complianceStatus: Object,
+  documentsByType: Object,
+  documentTypes: Object,
+});
+
+// Refs
+const activeTab = ref('overview');
+const showAddDocumentModal = ref(false);
+const selectedPhoto = ref(null);
+const photoModal = ref(null);
+const isSubmitting = ref(false);
+
+// Modal instances
+let photoModalInstance = null;
+
+// Document form
+const documentForm = ref({
+  document_type_id: '',
+  document_number: '',
+  issue_date: '',
+  expiry_date: '',
+  issuing_authority: '',
+  file_path: '',
+  notes: ''
+});
+
+// Methods
+const formatHours = (hours) => {
+  return hours ? parseFloat(hours).toLocaleString() : '0';
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+const getDocumentStatusClass = (document) => {
+  switch (document.compliance_status) {
+    case 'Valid': return 'status-valid';
+    case 'Expiring Soon': return 'status-warning';
+    case 'Expired': return 'status-expired';
+    default: return 'status-pending';
+  }
+};
+
+const getDocumentStatusTitle = (document) => {
+  switch (document.compliance_status) {
+    case 'Valid': return 'Document is valid';
+    case 'Expiring Soon': return 'Document expires soon';
+    case 'Expired': return 'Document has expired';
+    default: return 'Document pending review';
+  }
+};
+
+const getExpiryDateClass = (document) => {
+  if (!document.expiry_date) return '';
+  if (document.is_expired) return 'text-danger';
+  if (document.is_expiring_soon) return 'text-warning';
+  return 'text-muted';
+};
+
+const showPhotoModal = (photo) => {
+  selectedPhoto.value = photo;
+  if (photoModalInstance) {
+    photoModalInstance.show();
+  }
+};
+
+const handleFileUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('document', file);
+
+  try {
+    const response = await fetch(route('aircraft.upload-document'), {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      documentForm.value.file_path = result.path;
+    } else {
+      alert('File upload failed');
+    }
+  } catch (error) {
+    console.error('Upload error:', error);
+    alert('File upload failed');
+  }
+};
+
+const closeDocumentModal = () => {
+  showAddDocumentModal.value = false;
+  resetDocumentForm();
+};
+
+const submitDocument = () => {
+  isSubmitting.value = true;
+
+  router.post(route('aircraft.documents.store', props.aircraft.id), documentForm.value, {
+    onSuccess: () => {
+      closeDocumentModal();
+    },
+    onFinish: () => {
+      isSubmitting.value = false;
+    }
+  });
+};
+
+const resetDocumentForm = () => {
+  documentForm.value = {
+    document_type_id: '',
+    document_number: '',
+    issue_date: '',
+    expiry_date: '',
+    issuing_authority: '',
+    file_path: '',
+    notes: ''
+  };
+};
+
+const editDocument = (document) => {
+  // Implement edit functionality
+  console.log('Edit document:', document);
+};
+
+const deleteDocument = (document) => {
+  if (confirm('Are you sure you want to delete this document?')) {
+    router.delete(route('aircraft.documents.destroy', [props.aircraft.id, document.id]));
+  }
+};
+
+// Initialize modals
+onMounted(() => {
+  // Initialize photo modal only
+  if (photoModal.value) {
+    photoModalInstance = new window.bootstrap.Modal(photoModal.value);
+  }
+});
+</script>
+
+<style scoped>
+.document-card {
+  background: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.document-card:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+}
+
+.compliance-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-valid {
+  background: #28a745;
+}
+
+.status-warning {
+  background: #ffc107;
+}
+
+.status-expired {
+  background: #dc3545;
+}
+
+.status-pending {
+  background: #007bff;
+}
+
+.progress-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: conic-gradient(
+    #28a745 calc(var(--progress) * 1%),
+    #e9ecef calc(var(--progress) * 1%)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-circle::before {
+  content: '';
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  background: white;
+  border-radius: 50%;
+}
+
+.progress-text {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.percentage {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.stat-number {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.photo-thumbnail img {
+  max-height: 150px;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.photo-thumbnail img:hover {
+  transform: scale(1.05);
+}
+
+.section-title {
+  color: #495057;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+.breadcrumb-item a {
+  color: #007bff;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.custom-select {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.custom-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-select:disabled {
+  background-color: #e9ecef;
+}
+
+/* Stat Cards */
+.stat-card {
+  border-radius: 15px;
+  background: linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(25%, -25%);
+}
+
+.stat-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: white !important;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.stat-card.stat-primary {
+  --gradient-from: #4e73df;
+  --gradient-to: #224abe;
+}
+
+.stat-card.stat-success {
+  --gradient-from: #1cc88a;
+  --gradient-to: #13855c;
+}
+
+.stat-card.stat-info {
+  --gradient-from: #36b9cc;
+  --gradient-to: #258391;
+}
+
+.stat-card.stat-warning {
+  --gradient-from: #f6c23e;
+  --gradient-to: #dda20a;
+}
+
+.stat-card.stat-danger {
+  --gradient-from: #e74a3b;
+  --gradient-to: #be2617;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.stat-label {
+  opacity: 0.9;
+  font-size: 0.875rem;
+}
+
+/* Breadcrumb styling */
+.breadcrumb-sm .breadcrumb-item {
+  font-size: 0.75rem;
+}
+
+.breadcrumb-sm .breadcrumb-item + .breadcrumb-item::before {
+  font-size: 0.65rem;
+}
+</style>

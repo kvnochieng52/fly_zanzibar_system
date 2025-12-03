@@ -2,102 +2,105 @@
   <Head :title="`${staff.full_name} - Staff Profile`" />
 
   <DashboardLayout>
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-start mb-4">
-      <div class="d-flex align-items-center">
-        <div class="avatar-lg me-4">
-          <img v-if="staff.profile_photo"
-               :src="`/storage/${staff.profile_photo}`"
-               :alt="staff.full_name"
-               class="w-100 h-100 object-cover" />
-          <span v-else class="initials-fallback">{{ staff.first_name[0] }}{{ staff.last_name[0] }}</span>
-        </div>
-        <div>
-          <h1 class="h3 mb-1 text-gray-900">{{ staff.full_name }}</h1>
-          <div class="d-flex align-items-center gap-3">
-            <span class="text-muted">{{ staff.position?.title || 'N/A' }}</span>
-            <span
-              class="badge rounded-pill"
-              :style="{ backgroundColor: staff.status?.color + '20' || '#6c757d20', color: staff.status?.color || '#6c757d', border: '1px solid ' + (staff.status?.color || '#6c757d') }"
-            >
-              {{ staff.status?.name || 'N/A' }}
-            </span>
+    <!-- Page Header with Profile and Stats in One Row -->
+    <div class="row align-items-center mb-4">
+      <!-- Left Side: Profile Photo, Name, and Details -->
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center">
+          <div class="flex-shrink-0" style="width: 60px; height: 60px; margin-right: 12px;">
+            <img v-if="staff.profile_photo"
+                 :src="`/storage/${staff.profile_photo}`"
+                 :alt="staff.full_name"
+                 class="w-100 h-100 object-cover" />
+            <div v-else class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
+              <span class="text-white fw-bold">{{ staff.first_name[0] }}{{ staff.last_name[0] }}</span>
+            </div>
+          </div>
+          <div class="flex-grow-1">
+            <h1 class="h5 mb-1 text-gray-900">{{ staff.full_name }}</h1>
+            <div class="d-flex flex-column gap-1">
+              <span class="text-muted small">{{ staff.position?.title || 'N/A' }}</span>
+              <span
+                class="badge rounded-pill align-self-start small"
+                :style="{ backgroundColor: staff.status?.color + '20' || '#6c757d20', color: staff.status?.color || '#6c757d', border: '1px solid ' + (staff.status?.color || '#6c757d') }"
+              >
+                {{ staff.status?.name || 'N/A' }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="d-flex gap-2">
-        <a :href="`/staff/${staff.id}/edit`" class="btn btn-warning">
-          <i class="fas fa-edit me-2"></i>Edit Profile
-        </a>
-        <a href="/staff" class="btn btn-outline-secondary">
-          <i class="fas fa-arrow-left me-2"></i>Back to Staff
-        </a>
+
+      <!-- Right Side: Quick Stats -->
+      <div class="col-lg-8">
+        <div class="row">
+          <div class="col-4">
+            <div class="card border-0 shadow-sm h-100 stat-card stat-primary">
+              <div class="card-body d-flex align-items-center p-3">
+                <div class="stat-icon me-3">
+                  <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="stat-label text-white-75 small">Years of Service</div>
+                  <div class="stat-value text-white fw-bold">{{ staff.years_of_service || 0 }} years</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Age box commented out -->
+          <!--
+          <div class="col-4">
+            <div class="card border-0 shadow-sm h-100 stat-card stat-success">
+              <div class="card-body d-flex align-items-center p-3">
+                <div class="stat-icon me-3">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="stat-label text-white-75 small">Age</div>
+                  <div class="stat-value text-white fw-bold">{{ staff.age || 0 }} years</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          -->
+
+          <div class="col-4">
+            <div class="card border-0 shadow-sm h-100 stat-card stat-info">
+              <div class="card-body d-flex align-items-center p-3">
+                <div class="stat-icon me-3">
+                  <i class="fas fa-building"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="stat-label text-white-75 small">Department</div>
+                  <div class="stat-value text-white fw-bold small">{{ staff.department?.name || 'N/A' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-4">
+            <div class="card border-0 shadow-sm h-100 stat-card stat-warning">
+              <div class="card-body d-flex align-items-center p-3">
+                <div class="stat-icon me-3">
+                  <i class="fas fa-id-badge"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="stat-label text-white-75 small">Staff Number</div>
+                  <div class="stat-value text-white fw-bold small">{{ staff.staff_number || 'N/A' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Quick Stats Row -->
-    <div class="row mb-2">
-      <div class="col-lg-3 col-md-6 mb-2">
-        <div class="card border-0 shadow-sm h-100 stat-card stat-primary">
-          <div class="card-body d-flex align-items-center">
-            <div class="stat-icon me-4">
-              <i class="fas fa-calendar-alt"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="stat-label text-white-75">Years of Service</div>
-              <div class="stat-value text-white fw-bold">{{ staff.years_of_service || 0 }} years</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-6 mb-2">
-        <div class="card border-0 shadow-sm h-100 stat-card stat-success">
-          <div class="card-body d-flex align-items-center">
-            <div class="stat-icon me-4">
-              <i class="fas fa-user"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="stat-label text-white-75">Age</div>
-              <div class="stat-value text-white fw-bold">{{ staff.age || 0 }} years</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-6 mb-2">
-        <div class="card border-0 shadow-sm h-100 stat-card stat-info">
-          <div class="card-body d-flex align-items-center">
-            <div class="stat-icon me-4">
-              <i class="fas fa-building"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="stat-label text-white-75">Department</div>
-              <div class="stat-value text-white fw-bold">{{ staff.department?.name || 'N/A' }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-6 mb-2">
-        <div class="card border-0 shadow-sm h-100 stat-card stat-warning">
-          <div class="card-body d-flex align-items-center">
-            <div class="stat-icon me-4">
-              <i class="fas fa-id-badge"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="stat-label text-white-75">Staff Number</div>
-              <div class="stat-value text-white fw-bold">{{ staff.staff_number || 'N/A' }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs Navigation -->
+    <!-- Tabs Navigation with Action Buttons -->
     <div class="card border-0 shadow-sm">
       <div class="card-header bg-transparent">
-        <ul class="nav nav-pills" id="staffTabs" role="tablist">
+        <div class="d-flex justify-content-between align-items-center">
+          <ul class="nav nav-pills" id="staffTabs" role="tablist">
           <li class="nav-item" role="presentation">
             <button
               :class="['nav-link', { active: activeTab === 'basic' }]"
@@ -143,6 +146,17 @@
             </button>
           </li>
         </ul>
+
+          <!-- Action Buttons on the Right -->
+          <div class="d-flex gap-2">
+            <a :href="`/staff/${staff.id}/edit`" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            <a href="/staff" class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-arrow-left me-1"></i>Back
+            </a>
+          </div>
+        </div>
       </div>
 
       <div class="card-body">

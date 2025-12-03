@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\AircraftController;
+use App\Http\Controllers\CompanyDocumentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -64,6 +66,42 @@ Route::middleware('auth')->group(function () {
     Route::post('/staff/{staff}/files', [StaffController::class, 'storeFile'])->name('staff.files.store');
     Route::get('/staff/{staff}/files/{file}/download', [StaffController::class, 'downloadFile'])->name('staff.files.download');
     Route::delete('/staff/{staff}/files/{file}', [StaffController::class, 'destroyFile'])->name('staff.files.destroy');
+
+    // Aircraft Management routes
+    Route::resource('aircraft', AircraftController::class);
+    Route::post('/aircraft/upload-photo', [AircraftController::class, 'uploadPhoto'])->name('aircraft.upload-photo');
+    Route::post('/aircraft/upload-document', [AircraftController::class, 'uploadDocument'])->name('aircraft.upload-document');
+
+    // Aircraft Document Management
+    Route::post('/aircraft/{aircraft}/documents', [AircraftController::class, 'storeDocument'])->name('aircraft.documents.store');
+    Route::put('/aircraft/{aircraft}/documents/{document}', [AircraftController::class, 'updateDocument'])->name('aircraft.documents.update');
+    Route::delete('/aircraft/{aircraft}/documents/{document}', [AircraftController::class, 'destroyDocument'])->name('aircraft.documents.destroy');
+
+    // Aircraft API endpoints
+    Route::get('/aircraft/api/models-by-manufacturer', [AircraftController::class, 'getModelsByManufacturer'])->name('aircraft.models-by-manufacturer');
+
+    // Aircraft Maintenance routes
+    Route::post('/aircraft/{aircraft}/maintenance/schedule', [\App\Http\Controllers\AircraftMaintenanceController::class, 'storeSchedule'])->name('aircraft.maintenance.store');
+    Route::post('/aircraft/{aircraft}/work-orders', [\App\Http\Controllers\AircraftMaintenanceController::class, 'storeWorkOrder'])->name('aircraft.work-orders.store');
+    Route::get('/api/maintenance-types', [\App\Http\Controllers\AircraftMaintenanceController::class, 'getMaintenanceTypes'])->name('api.maintenance-types');
+    Route::get('/api/maintenance-organizations', [\App\Http\Controllers\AircraftMaintenanceController::class, 'getMaintenanceOrganizations'])->name('api.maintenance-organizations');
+    Route::get('/api/priorities/{context?}', [\App\Http\Controllers\AircraftMaintenanceController::class, 'getPriorities'])->name('api.priorities');
+    Route::delete('/aircraft/maintenance/{schedule}', [\App\Http\Controllers\AircraftMaintenanceController::class, 'deleteSchedule'])->name('aircraft.maintenance.delete');
+    Route::delete('/aircraft/work-orders/{workOrder}', [\App\Http\Controllers\AircraftMaintenanceController::class, 'deleteWorkOrder'])->name('aircraft.work-orders.delete');
+    Route::patch('/aircraft/work-orders/{workOrder}/status', [\App\Http\Controllers\AircraftMaintenanceController::class, 'updateWorkOrderStatus'])->name('aircraft.work-orders.status');
+
+    // Company Documents Management routes
+    Route::resource('company-documents', CompanyDocumentController::class);
+    Route::get('/company-documents/{companyDocument}/download', [CompanyDocumentController::class, 'download'])->name('company-documents.download');
+    Route::get('/documents-dashboard', [CompanyDocumentController::class, 'dashboard'])->name('company-documents.dashboard');
+    Route::get('/company-documents/{companyDocument}/renew', [CompanyDocumentController::class, 'showRenew'])->name('company-documents.renew');
+    Route::post('/company-documents/{companyDocument}/renew', [CompanyDocumentController::class, 'processRenewal'])->name('company-documents.process-renewal');
+
+    // Accounting Module routes
+    Route::resource('quotations', \App\Http\Controllers\QuotationController::class);
+    Route::resource('customers', \App\Http\Controllers\CustomerController::class);
+    Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
+    Route::post('/quotations/{quotation}/convert-to-invoice', [\App\Http\Controllers\InvoiceController::class, 'convertFromQuotation'])->name('quotations.convert-to-invoice');
 });
 
 require __DIR__.'/auth.php';

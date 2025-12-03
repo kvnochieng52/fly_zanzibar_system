@@ -103,13 +103,13 @@
         <nav class="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <li class="nav-item">
-              <Link :href="route('home.dashboard')" class="nav-link active">
+              <Link :href="route('home.dashboard')" class="nav-link" :class="{ active: currentRoute === '/' || currentRoute === '/dashboard' }">
                 <i class="nav-icon fas fa-tachometer-alt"></i>
                 <p>Dashboard</p>
               </Link>
             </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
+            <li class="nav-item has-treeview" :class="{ 'menu-open': currentRoute.includes('/sms') || isMenuOpen('sms') }">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('sms')">
                 <i class="nav-icon fas fa-sms"></i>
                 <p>
                   SMS Management
@@ -118,27 +118,27 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="/sms/send" class="nav-link">
+                  <Link href="/sms/send" class="nav-link" :class="{ active: currentRoute === '/sms/send' }">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Send SMS</p>
-                  </a>
+                  </Link>
                 </li>
                 <li class="nav-item">
-                  <a href="/sms/templates" class="nav-link">
+                  <Link href="/sms/templates" class="nav-link" :class="{ active: currentRoute === '/sms/templates' }">
                     <i class="far fa-circle nav-icon"></i>
                     <p>SMS Templates</p>
-                  </a>
+                  </Link>
                 </li>
                 <li class="nav-item">
-                  <a href="/sms/logs" class="nav-link">
+                  <Link href="/sms/logs" class="nav-link" :class="{ active: currentRoute === '/sms/logs' }">
                     <i class="far fa-circle nav-icon"></i>
                     <p>SMS Logs</p>
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
             <!-- Staff Management Menu -->
-            <li class="nav-item">
+            <li class="nav-item has-treeview" :class="{ 'menu-open': isStaffMenuActive || isMenuOpen('staff') }">
               <a href="#" class="nav-link" @click.prevent="toggleMenu('staff')">
                 <i class="nav-icon fas fa-users"></i>
                 <p>
@@ -146,15 +146,15 @@
                   <i class="fas fa-angle-left right"></i>
                 </p>
               </a>
-              <ul class="nav nav-treeview" :style="{ display: isMenuOpen('staff') ? 'block' : 'none' }">
+              <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <Link :href="route('staff.index')" class="nav-link">
+                  <Link :href="route('staff.index')" class="nav-link" :class="{ active: currentRoute === '/staff' }">
                     <i class="fas fa-list nav-icon"></i>
                     <p>All Staff</p>
                   </Link>
                 </li>
                 <li class="nav-item">
-                  <Link :href="route('staff.create')" class="nav-link">
+                  <Link :href="route('staff.create')" class="nav-link" :class="{ active: currentRoute === '/staff/create' }">
                     <i class="fas fa-user-plus nav-icon"></i>
                     <p>Add New Staff</p>
                   </Link>
@@ -162,17 +162,104 @@
               </ul>
             </li>
 
+            <!-- Aircraft Management Menu -->
+            <li class="nav-item has-treeview" :class="{ 'menu-open': isAircraftMenuActive || isMenuOpen('aircraft') }">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('aircraft')">
+                <i class="nav-icon fas fa-plane"></i>
+                <p>
+                  Aircraft Management
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <Link :href="route('aircraft.index')" class="nav-link" :class="{ active: currentRoute === '/aircraft' }">
+                    <i class="fas fa-list nav-icon"></i>
+                    <p>All Aircraft</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('aircraft.create')" class="nav-link" :class="{ active: currentRoute === '/aircraft/create' }">
+                    <i class="fas fa-plus nav-icon"></i>
+                    <p>Add New Aircraft</p>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
+            <!-- Company Documents Menu -->
+            <li class="nav-item has-treeview" :class="{ 'menu-open': isDocumentsMenuActive || isMenuOpen('documents') }">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('documents')">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>
+                  Company Documents
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <Link :href="route('company-documents.dashboard')" class="nav-link" :class="{ active: currentRoute === '/documents-dashboard' }">
+                    <i class="fas fa-chart-pie nav-icon"></i>
+                    <p>Dashboard</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('company-documents.index')" class="nav-link" :class="{ active: currentRoute === '/company-documents' }">
+                    <i class="fas fa-list nav-icon"></i>
+                    <p>All Documents</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('company-documents.create')" class="nav-link" :class="{ active: currentRoute === '/company-documents/create' }">
+                    <i class="fas fa-plus nav-icon"></i>
+                    <p>Add New Document</p>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
+            <!-- Accounting Menu -->
+            <li class="nav-item has-treeview" :class="{ 'menu-open': isAccountingMenuActive || isMenuOpen('accounting') }">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('accounting')">
+                <i class="nav-icon fas fa-calculator"></i>
+                <p>
+                  Accounting
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <Link :href="route('quotations.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/quotations') }">
+                    <i class="fas fa-file-invoice nav-icon"></i>
+                    <p>Quotations</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('customers.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/customers') }">
+                    <i class="fas fa-users nav-icon"></i>
+                    <p>Customers</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('invoices.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/invoices') }">
+                    <i class="fas fa-file-invoice-dollar nav-icon"></i>
+                    <p>Invoices</p>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
             <li class="nav-item">
-              <a href="/recipients" class="nav-link">
+              <Link href="/recipients" class="nav-link" :class="{ active: currentRoute === '/recipients' }">
                 <i class="nav-icon fas fa-address-book"></i>
                 <p>Recipients</p>
-              </a>
+              </Link>
             </li>
             <li class="nav-item">
-              <a href="/settings" class="nav-link">
+              <Link href="/settings" class="nav-link" :class="{ active: currentRoute === '/settings' }">
                 <i class="nav-icon fas fa-cog"></i>
                 <p>Settings</p>
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -205,7 +292,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount, watch } from 'vue';
 import { router, usePage, Link } from '@inertiajs/vue3';
 import LoadingBar from '@/Components/LoadingBar.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
@@ -229,6 +316,43 @@ const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
 // Get the authenticated user from Laravel
 const user = computed(() => usePage().props.auth.user);
+
+// Get current route for active menu highlighting
+const currentRoute = computed(() => usePage().url);
+
+// Check if any submenu items are active to open parent menus
+const isStaffMenuActive = computed(() => {
+  return currentRoute.value.startsWith("/staff");
+});
+
+const isAircraftMenuActive = computed(() => {
+  return currentRoute.value.startsWith("/aircraft");
+});
+
+const isDocumentsMenuActive = computed(() => {
+  return currentRoute.value.startsWith("/company-documents") || currentRoute.value.startsWith("/documents-dashboard");
+});
+
+const isAccountingMenuActive = computed(() => {
+  return currentRoute.value.startsWith("/quotations") || currentRoute.value.startsWith("/customers") || currentRoute.value.startsWith("/invoices");
+});
+
+// Watch for route changes and update active menus
+watch(currentRoute, (newRoute) => {
+  // Auto-expand menus based on current route
+  if (newRoute.includes('/staff') && !openMenus.value.includes('staff')) {
+    openMenus.value.push('staff');
+  }
+  if (newRoute.includes('/aircraft') && !openMenus.value.includes('aircraft')) {
+    openMenus.value.push('aircraft');
+  }
+  if ((newRoute.includes('/company-documents') || newRoute.includes('/documents-dashboard')) && !openMenus.value.includes('documents')) {
+    openMenus.value.push('documents');
+  }
+  if (newRoute.includes('/sms') && !openMenus.value.includes('sms')) {
+    openMenus.value.push('sms');
+  }
+}, { immediate: true });
 
 // Toggle sidebar collapsed/open state
 function toggleSidebar() {
@@ -297,6 +421,18 @@ function setActiveMenuItem() {
   if (currentUrl.includes('/sms') && !openMenus.value.includes('sms')) {
     openMenus.value.push('sms');
   }
+
+  if (currentUrl.includes('/staff') && !openMenus.value.includes('staff')) {
+    openMenus.value.push('staff');
+  }
+
+  if (currentUrl.includes('/aircraft') && !openMenus.value.includes('aircraft')) {
+    openMenus.value.push('aircraft');
+  }
+
+  if ((currentUrl.includes('/company-documents') || currentUrl.includes('/documents-dashboard')) && !openMenus.value.includes('documents')) {
+    openMenus.value.push('documents');
+  }
 }
 
 // Toggle dark mode
@@ -326,11 +462,6 @@ function applyTheme() {
 
 // Handle clicks outside dropdowns to close them
 function handleClickOutside(e) {
-  // Don't interfere with Link components
-  if (e.target.closest('a[href]') || e.target.closest('[data-inertia]')) {
-    return;
-  }
-
   // Close user dropdown if clicking outside
   const userDropdownToggle = document.getElementById('userDropdown');
   const dropdownMenu = document.querySelector('.dropdown-menu');
