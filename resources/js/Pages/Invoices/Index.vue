@@ -194,6 +194,14 @@
                           >
                             <i class="fas fa-eye"></i>
                           </Link>
+                          <a
+                            :href="route('invoices.download-pdf', invoice.id)"
+                            class="btn btn-sm btn-outline-secondary"
+                            title="Download PDF"
+                            target="_blank"
+                          >
+                            <i class="fas fa-file-pdf"></i>
+                          </a>
                           <Link
                             :href="route('invoices.edit', invoice.id)"
                             class="btn btn-sm btn-outline-primary"
@@ -318,7 +326,11 @@ const getStatusBadgeClass = (status) => {
 }
 
 const recordPayment = (invoice) => {
-  alert(`Payment recording for invoice ${invoice.invoice_number} will be implemented with database integration.`)
+  // Navigate to receipts creation page
+  router.visit(route('receipts.create'), {
+    data: { invoice_id: invoice.id },
+    method: 'get'
+  })
 }
 
 const deleteInvoice = (invoice) => {

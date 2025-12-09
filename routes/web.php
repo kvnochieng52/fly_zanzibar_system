@@ -5,6 +5,15 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\AircraftController;
 use App\Http\Controllers\CompanyDocumentController;
+use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\StatementController;
+use App\Http\Controllers\LandingFeeController;
+use App\Http\Controllers\NavigationFeeController;
+use App\Http\Controllers\FuelPurchaseController;
+use App\Http\Controllers\FuelConsumptionController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserManagementController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -101,7 +110,39 @@ Route::middleware('auth')->group(function () {
     Route::resource('quotations', \App\Http\Controllers\QuotationController::class);
     Route::resource('customers', \App\Http\Controllers\CustomerController::class);
     Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
+    Route::get('/invoices/{invoice}/download-pdf', [\App\Http\Controllers\InvoiceController::class, 'downloadPdf'])->name('invoices.download-pdf');
     Route::post('/quotations/{quotation}/convert-to-invoice', [\App\Http\Controllers\InvoiceController::class, 'convertFromQuotation'])->name('quotations.convert-to-invoice');
+
+    // Receipt Management routes
+    Route::resource('receipts', ReceiptController::class);
+    Route::get('/receipts/{receipt}/download-pdf', [ReceiptController::class, 'downloadPdf'])->name('receipts.download-pdf');
+
+    // Statement Generation routes
+    Route::get('/statements', [StatementController::class, 'index'])->name('statements.index');
+    Route::get('/statements/{customer}', [StatementController::class, 'show'])->name('statements.show');
+    Route::get('/statements/{customer}/download', [StatementController::class, 'download'])->name('statements.download');
+    Route::get('/aging-report', [StatementController::class, 'agingReport'])->name('statements.aging-report');
+
+    // Fee Tracking Module routes
+    Route::resource('landing-fees', LandingFeeController::class);
+    Route::resource('navigation-fees', NavigationFeeController::class);
+    Route::resource('fuel-purchases', FuelPurchaseController::class);
+    Route::resource('fuel-consumption', FuelConsumptionController::class);
+
+    // User Management Module routes
+    Route::resource('roles', RoleController::class);
+    Route::post('/roles/{role}/assign-permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
+    Route::delete('/roles/{role}/permissions/{permission}', [RoleController::class, 'removePermission'])->name('roles.remove-permission');
+
+    Route::resource('permissions', PermissionController::class);
+    Route::get('/api/permissions/by-category', [PermissionController::class, 'getPermissionsByCategory'])->name('permissions.by-category');
+    Route::post('/api/permissions/bulk-create', [PermissionController::class, 'bulkCreate'])->name('permissions.bulk-create');
+
+    Route::resource('users', UserManagementController::class);
+    Route::post('/users/{user}/assign-roles', [UserManagementController::class, 'assignRoles'])->name('users.assign-roles');
+    Route::delete('/users/{user}/roles/{role}', [UserManagementController::class, 'removeRole'])->name('users.remove-role');
+    Route::post('/users/{user}/assign-permissions', [UserManagementController::class, 'assignPermissions'])->name('users.assign-permissions');
+    Route::get('/users/{user}/effective-permissions', [UserManagementController::class, 'getEffectivePermissions'])->name('users.effective-permissions');
 });
 
 require __DIR__.'/auth.php';

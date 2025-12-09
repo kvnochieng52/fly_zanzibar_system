@@ -9,6 +9,7 @@ use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -169,5 +170,14 @@ class InvoiceController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function downloadPdf(Invoice $invoice)
+    {
+        $invoice->load(['customer', 'currency', 'items', 'quotation']);
+
+        $pdf = Pdf::loadView('pdf.invoice', compact('invoice'));
+
+        return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
     }
 }

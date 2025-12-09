@@ -66,6 +66,16 @@ class Customer extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function receipts(): HasMany
+    {
+        return $this->hasMany(Receipt::class);
+    }
+
     public function getDisplayNameAttribute(): string
     {
         return $this->type === 'corporate'

@@ -108,35 +108,6 @@
                 <p>Dashboard</p>
               </Link>
             </li>
-            <li class="nav-item has-treeview" :class="{ 'menu-open': currentRoute.includes('/sms') || isMenuOpen('sms') }">
-              <a href="#" class="nav-link" @click.prevent="toggleMenu('sms')">
-                <i class="nav-icon fas fa-sms"></i>
-                <p>
-                  SMS Management
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <Link href="/sms/send" class="nav-link" :class="{ active: currentRoute === '/sms/send' }">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Send SMS</p>
-                  </Link>
-                </li>
-                <li class="nav-item">
-                  <Link href="/sms/templates" class="nav-link" :class="{ active: currentRoute === '/sms/templates' }">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>SMS Templates</p>
-                  </Link>
-                </li>
-                <li class="nav-item">
-                  <Link href="/sms/logs" class="nav-link" :class="{ active: currentRoute === '/sms/logs' }">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>SMS Logs</p>
-                  </Link>
-                </li>
-              </ul>
-            </li>
             <!-- Staff Management Menu -->
             <li class="nav-item has-treeview" :class="{ 'menu-open': isStaffMenuActive || isMenuOpen('staff') }">
               <a href="#" class="nav-link" @click.prevent="toggleMenu('staff')">
@@ -246,15 +217,95 @@
                     <p>Invoices</p>
                   </Link>
                 </li>
+                <li class="nav-item">
+                  <Link :href="route('receipts.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/receipts') }">
+                    <i class="fas fa-receipt nav-icon"></i>
+                    <p>Payment Receipts</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('statements.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/statements') }">
+                    <i class="fas fa-file-alt nav-icon"></i>
+                    <p>Statements</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('statements.aging-report')" class="nav-link" :class="{ active: currentRoute.startsWith('/aging-report') }">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <p>Aging Report</p>
+                  </Link>
+                </li>
               </ul>
             </li>
 
-            <li class="nav-item">
-              <Link href="/recipients" class="nav-link" :class="{ active: currentRoute === '/recipients' }">
-                <i class="nav-icon fas fa-address-book"></i>
-                <p>Recipients</p>
-              </Link>
+            <!-- Fee Tracking Menu -->
+            <li class="nav-item has-treeview" :class="{ 'menu-open': isFeeTrackingMenuActive || isMenuOpen('feeTracking') }">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('feeTracking')">
+                <i class="nav-icon fas fa-plane-departure"></i>
+                <p>
+                  Fee Tracking
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <Link :href="route('landing-fees.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/landing-fees') }">
+                    <i class="fas fa-plane-arrival nav-icon"></i>
+                    <p>Landing Fees</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('navigation-fees.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/navigation-fees') }">
+                    <i class="fas fa-route nav-icon"></i>
+                    <p>Navigation Fees</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('fuel-purchases.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/fuel-purchases') }">
+                    <i class="fas fa-gas-pump nav-icon"></i>
+                    <p>Fuel Purchases</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('fuel-consumption.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/fuel-consumption') }">
+                    <i class="fas fa-tachometer-alt nav-icon"></i>
+                    <p>Fuel Consumption</p>
+                  </Link>
+                </li>
+              </ul>
             </li>
+
+            <!-- User Management Menu -->
+            <li class="nav-item has-treeview" :class="{ 'menu-open': isUserManagementMenuActive || isMenuOpen('user-management') }">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('user-management')">
+                <i class="nav-icon fas fa-users-cog"></i>
+                <p>
+                  User Management
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <Link :href="route('users.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/users') }">
+                    <i class="fas fa-users nav-icon"></i>
+                    <p>All Users</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('roles.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/roles') }">
+                    <i class="fas fa-shield-alt nav-icon"></i>
+                    <p>Roles</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('permissions.index')" class="nav-link" :class="{ active: currentRoute.startsWith('/permissions') }">
+                    <i class="fas fa-key nav-icon"></i>
+                    <p>Permissions</p>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
             <li class="nav-item">
               <Link href="/settings" class="nav-link" :class="{ active: currentRoute === '/settings' }">
                 <i class="nav-icon fas fa-cog"></i>
@@ -334,7 +385,25 @@ const isDocumentsMenuActive = computed(() => {
 });
 
 const isAccountingMenuActive = computed(() => {
-  return currentRoute.value.startsWith("/quotations") || currentRoute.value.startsWith("/customers") || currentRoute.value.startsWith("/invoices");
+  return currentRoute.value.startsWith("/quotations") ||
+         currentRoute.value.startsWith("/customers") ||
+         currentRoute.value.startsWith("/invoices") ||
+         currentRoute.value.startsWith("/receipts") ||
+         currentRoute.value.startsWith("/statements") ||
+         currentRoute.value.startsWith("/aging-report");
+});
+
+const isFeeTrackingMenuActive = computed(() => {
+  return currentRoute.value.startsWith("/landing-fees") ||
+         currentRoute.value.startsWith("/navigation-fees") ||
+         currentRoute.value.startsWith("/fuel-purchases") ||
+         currentRoute.value.startsWith("/fuel-consumption");
+});
+
+const isUserManagementMenuActive = computed(() => {
+  return currentRoute.value.startsWith("/users") ||
+         currentRoute.value.startsWith("/roles") ||
+         currentRoute.value.startsWith("/permissions");
 });
 
 // Watch for route changes and update active menus
@@ -351,6 +420,15 @@ watch(currentRoute, (newRoute) => {
   }
   if (newRoute.includes('/sms') && !openMenus.value.includes('sms')) {
     openMenus.value.push('sms');
+  }
+  if ((newRoute.includes('/landing-fees') || newRoute.includes('/navigation-fees') ||
+       newRoute.includes('/fuel-purchases') || newRoute.includes('/fuel-consumption')) &&
+      !openMenus.value.includes('feeTracking')) {
+    openMenus.value.push('feeTracking');
+  }
+  if ((newRoute.includes('/users') || newRoute.includes('/roles') || newRoute.includes('/permissions')) &&
+      !openMenus.value.includes('user-management')) {
+    openMenus.value.push('user-management');
   }
 }, { immediate: true });
 

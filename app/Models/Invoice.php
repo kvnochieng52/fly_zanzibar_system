@@ -14,6 +14,7 @@ class Invoice extends Model
     protected $fillable = [
         'invoice_number',
         'customer_id',
+        'quotation_id',
         'currency_id',
         'invoice_date',
         'due_date',
@@ -52,9 +53,19 @@ class Invoice extends Model
         return $this->belongsTo(Currency::class);
     }
 
+    public function quotation(): BelongsTo
+    {
+        return $this->belongsTo(Quotation::class);
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public function receipts(): HasMany
+    {
+        return $this->hasMany(Receipt::class);
     }
 
     public function createdBy(): BelongsTo
