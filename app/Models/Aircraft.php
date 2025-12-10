@@ -93,6 +93,11 @@ class Aircraft extends Model
     }
 
     // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('status_id', AircraftStatus::getInServiceId());
+    }
+
     public function scopeInService($query)
     {
         return $query->where('status_id', AircraftStatus::getInServiceId());

@@ -37,4 +37,17 @@ class Airport extends Model
     {
         return $this->hasMany(FuelAccountBalance::class);
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Get the airport code (prefer IATA, fallback to ICAO).
+     */
+    public function getCodeAttribute()
+    {
+        return $this->iata_code ?: $this->icao_code;
+    }
 }

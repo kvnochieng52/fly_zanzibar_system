@@ -158,6 +158,43 @@
               </ul>
             </li>
 
+            <!-- Scheduled Flights Menu -->
+            <li class="nav-item has-treeview" :class="{ 'menu-open': isScheduledFlightsMenuActive || isMenuOpen('scheduled-flights') }">
+              <a href="#" class="nav-link" @click.prevent="toggleMenu('scheduled-flights')">
+                <i class="nav-icon fas fa-calendar-alt"></i>
+                <p>
+                  Scheduled Flights
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <Link :href="route('scheduled-flights.index')" class="nav-link" :class="{ active: currentRoute === '/scheduled-flights' }">
+                    <i class="fas fa-list nav-icon"></i>
+                    <p>All Flights</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('scheduled-flights.create')" class="nav-link" :class="{ active: currentRoute === '/scheduled-flights/create' }">
+                    <i class="fas fa-plus nav-icon"></i>
+                    <p>Schedule Flight</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('flight-routes.index')" class="nav-link" :class="{ active: currentRoute === '/flight-routes' }">
+                    <i class="fas fa-route nav-icon"></i>
+                    <p>Flight Routes</p>
+                  </Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('flight-routes.create')" class="nav-link" :class="{ active: currentRoute === '/flight-routes/create' }">
+                    <i class="fas fa-plus-circle nav-icon"></i>
+                    <p>Add New Route</p>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
             <!-- Company Documents Menu -->
             <li class="nav-item has-treeview" :class="{ 'menu-open': isDocumentsMenuActive || isMenuOpen('documents') }">
               <a href="#" class="nav-link" @click.prevent="toggleMenu('documents')">
@@ -406,6 +443,10 @@ const isUserManagementMenuActive = computed(() => {
          currentRoute.value.startsWith("/permissions");
 });
 
+const isScheduledFlightsMenuActive = computed(() => {
+  return currentRoute.value.startsWith("/scheduled-flights") || currentRoute.value.startsWith("/flight-routes");
+});
+
 // Watch for route changes and update active menus
 watch(currentRoute, (newRoute) => {
   // Auto-expand menus based on current route
@@ -429,6 +470,9 @@ watch(currentRoute, (newRoute) => {
   if ((newRoute.includes('/users') || newRoute.includes('/roles') || newRoute.includes('/permissions')) &&
       !openMenus.value.includes('user-management')) {
     openMenus.value.push('user-management');
+  }
+  if ((newRoute.includes('/scheduled-flights') || newRoute.includes('/flight-routes')) && !openMenus.value.includes('scheduled-flights')) {
+    openMenus.value.push('scheduled-flights');
   }
 }, { immediate: true });
 

@@ -14,6 +14,8 @@ use App\Http\Controllers\FuelConsumptionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ScheduledFlightController;
+use App\Http\Controllers\FlightRouteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -143,6 +145,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/users/{user}/roles/{role}', [UserManagementController::class, 'removeRole'])->name('users.remove-role');
     Route::post('/users/{user}/assign-permissions', [UserManagementController::class, 'assignPermissions'])->name('users.assign-permissions');
     Route::get('/users/{user}/effective-permissions', [UserManagementController::class, 'getEffectivePermissions'])->name('users.effective-permissions');
+
+    // Scheduled Flights Module routes
+    Route::resource('flight-routes', FlightRouteController::class);
+    Route::resource('scheduled-flights', ScheduledFlightController::class);
+
+    // Flight Passengers & Cargo routes
+    Route::resource('flight-passengers', \App\Http\Controllers\FlightPassengerController::class)->except(['index', 'show', 'create', 'edit']);
+    Route::post('flight-passengers/{passenger}/check-in', [\App\Http\Controllers\FlightPassengerController::class, 'checkIn'])->name('flight-passengers.check-in');
+
+    Route::resource('flight-cargo', \App\Http\Controllers\FlightCargoController::class)->except(['index', 'show', 'create', 'edit']);
+    Route::patch('flight-cargo/{cargo}/status', [\App\Http\Controllers\FlightCargoController::class, 'updateStatus'])->name('flight-cargo.update-status');
 });
 
 require __DIR__.'/auth.php';
