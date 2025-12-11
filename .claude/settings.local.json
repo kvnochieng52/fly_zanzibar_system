@@ -11,7 +11,10 @@
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
       "Bash(php:*)",
-      "Bash(composer:*)"
+      "Bash(composer:*)",
+      "Read(//c/Flutter Live/flight_distance/**)",
+      "Read(//c/laragon/www/flight_distance/**)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

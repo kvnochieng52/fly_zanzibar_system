@@ -52,11 +52,7 @@ class ScheduledFlight extends Model
                 $flight->flight_code = static::generateFlightCode();
             }
 
-            // Set capacity from aircraft if not set
-            if (!$flight->capacity && $flight->aircraft) {
-                $flight->capacity = $flight->aircraft->capacity;
-                $flight->available_seats = $flight->aircraft->capacity;
-            }
+            // Note: capacity and available_seats are now calculated dynamically from aircraft data
         });
     }
 
@@ -106,6 +102,22 @@ class ScheduledFlight extends Model
     public function cargo(): HasMany
     {
         return $this->hasMany(FlightCargo::class);
+    }
+
+    /**
+     * Get all landing fees for this scheduled flight.
+     */
+    public function landingFees(): HasMany
+    {
+        return $this->hasMany(FlightLandingFee::class);
+    }
+
+    /**
+     * Get all fuel consumption records for this scheduled flight.
+     */
+    public function fuelConsumption(): HasMany
+    {
+        return $this->hasMany(FlightFuelConsumption::class);
     }
 
     /**
@@ -247,11 +259,11 @@ class ScheduledFlight extends Model
             return;
         }
 
-        $this->total_departure_time = $routes->first()->departure_time;
-        $this->total_arrival_time = $routes->last()->arrival_time;
+        // Only update segment count - departure and arrival times are set from form
         $this->total_segments = $routes->count();
-        $this->total_duration_minutes = $routes->sum('duration_minutes');
-        $this->total_distance_km = $routes->sum('distance_km');
+
+        // Note: duration_minutes and distance_km are no longer stored in routes
+        // These would need to be calculated based on airport coordinates and flight plans
 
         // Update passenger and cargo counts
         $this->updatePassengerAndCargoStats();
@@ -327,6 +339,14 @@ class ScheduledFlight extends Model
     public function isOverbooked(): bool
     {
         return $this->passenger_count > $this->capacity;
+    }
+
+    /**
+     * Get aircraft capacity (dynamic from aircraft data).
+     */
+    public function getCapacityAttribute(): int
+    {
+        return $this->aircraft?->max_passengers ?? 0;
     }
 
     /**

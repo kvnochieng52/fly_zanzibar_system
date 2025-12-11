@@ -16,6 +16,8 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ScheduledFlightController;
 use App\Http\Controllers\FlightRouteController;
+use App\Http\Controllers\FlightLandingFeeController;
+use App\Http\Controllers\FlightFuelConsumptionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -156,6 +158,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('flight-cargo', \App\Http\Controllers\FlightCargoController::class)->except(['index', 'show', 'create', 'edit']);
     Route::patch('flight-cargo/{cargo}/status', [\App\Http\Controllers\FlightCargoController::class, 'updateStatus'])->name('flight-cargo.update-status');
+
+    // Flight Fees Module routes
+    Route::resource('flight-landing-fees', FlightLandingFeeController::class);
+    Route::resource('flight-fuel-consumption', FlightFuelConsumptionController::class);
+    Route::post('/flight-fuel-consumption/calculate-metrics', [FlightFuelConsumptionController::class, 'calculateMetrics'])->name('flight-fuel-consumption.calculate-metrics');
 });
 
 require __DIR__.'/auth.php';

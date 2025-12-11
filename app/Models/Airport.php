@@ -23,6 +23,10 @@ class Airport extends Model
         'is_active' => 'boolean'
     ];
 
+    protected $appends = [
+        'code'
+    ];
+
     public function landingFees(): HasMany
     {
         return $this->hasMany(LandingFee::class);

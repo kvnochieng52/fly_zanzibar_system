@@ -16,13 +16,20 @@ class ScheduledFlightController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ScheduledFlight::with(['aircraft', 'flightStatus', 'scheduleRoutes.originAirport', 'scheduleRoutes.destinationAirport']);
+        $query = ScheduledFlight::with([
+            'aircraft.manufacturer',
+            'aircraft.model',
+            'aircraft.status',
+            'flightStatus',
+            'scheduleRoutes.originAirport',
+            'scheduleRoutes.destinationAirport'
+        ]);
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('flight_code', 'like', '%' . $request->search . '%')
                   ->orWhereHas('aircraft', function ($subQ) use ($request) {
-                      $subQ->where('registration', 'like', '%' . $request->search . '%');
+                      $subQ->where('registration_number', 'like', '%' . $request->search . '%');
                   });
             });
         }
@@ -47,7 +54,10 @@ class ScheduledFlightController extends Controller
     public function create()
     {
         return Inertia::render('ScheduledFlights/Create', [
-            'aircraft' => Aircraft::active()->get(),
+            'aircraft' => Aircraft::with(['manufacturer', 'model', 'status'])
+                ->where('status_id', '!=', \App\Models\AircraftStatus::getAOGId())
+                ->orderBy('registration_number')
+                ->get(),
             'airports' => Airport::active()->orderBy('name')->get(),
             'statuses' => FlightStatus::active()->ordered()->get(),
             'customers' => Customer::select('id', 'first_name', 'last_name', 'company_name', 'email')->orderBy('company_name')->orderBy('last_name')->get(),
@@ -115,20 +125,42 @@ class ScheduledFlightController extends Controller
 
     public function show(ScheduledFlight $scheduledFlight)
     {
-        $scheduledFlight->load(['aircraft', 'flightStatus', 'scheduleRoutes.originAirport', 'scheduleRoutes.destinationAirport', 'passengers', 'cargo']);
+        $scheduledFlight->load([
+            'aircraft.manufacturer',
+            'aircraft.model',
+            'aircraft.status',
+            'flightStatus',
+            'scheduleRoutes.originAirport',
+            'scheduleRoutes.destinationAirport',
+            'passengers',
+            'cargo',
+            'landingFees.airport',
+            'fuelConsumption'
+        ]);
 
         return Inertia::render('ScheduledFlights/Show', [
             'flight' => $scheduledFlight,
+            'airports' => Airport::active()->orderBy('name')->get(),
         ]);
     }
 
     public function edit(ScheduledFlight $scheduledFlight)
     {
-        $scheduledFlight->load(['aircraft', 'flightStatus', 'scheduleRoutes.originAirport', 'scheduleRoutes.destinationAirport']);
+        $scheduledFlight->load([
+            'aircraft.manufacturer',
+            'aircraft.model',
+            'aircraft.status',
+            'flightStatus',
+            'scheduleRoutes.originAirport',
+            'scheduleRoutes.destinationAirport'
+        ]);
 
         return Inertia::render('ScheduledFlights/Edit', [
             'flight' => $scheduledFlight,
-            'aircraft' => Aircraft::active()->get(),
+            'aircraft' => Aircraft::with(['manufacturer', 'model', 'status'])
+                ->where('status_id', '!=', \App\Models\AircraftStatus::getAOGId())
+                ->orderBy('registration_number')
+                ->get(),
             'airports' => Airport::active()->orderBy('name')->get(),
             'statuses' => FlightStatus::active()->ordered()->get(),
             'customers' => Customer::select('id', 'first_name', 'last_name', 'company_name', 'email')->orderBy('company_name')->orderBy('last_name')->get(),

@@ -72,7 +72,7 @@
               <i class="fas fa-calendar-alt"></i>
             </div>
             <div class="flex-grow-1">
-              <div class="stat-label text-white-75 small">Total Flights</div>
+              <div class="stat-label text-white small">Total Flights</div>
               <div class="stat-value text-white fw-bold">{{ flights.total || 0 }}</div>
             </div>
           </div>
@@ -86,7 +86,7 @@
               <i class="fas fa-plane-departure"></i>
             </div>
             <div class="flex-grow-1">
-              <div class="stat-label text-white-75 small">Today's Flights</div>
+              <div class="stat-label text-white small">Today's Flights</div>
               <div class="stat-value text-white fw-bold">{{ todayFlights || 0 }}</div>
             </div>
           </div>
@@ -100,7 +100,7 @@
               <i class="fas fa-clock"></i>
             </div>
             <div class="flex-grow-1">
-              <div class="stat-label text-white-75 small">On Time</div>
+              <div class="stat-label text-white small">On Time</div>
               <div class="stat-value text-white fw-bold">{{ onTimeFlights || 0 }}</div>
             </div>
           </div>
@@ -114,7 +114,7 @@
               <i class="fas fa-exclamation-triangle"></i>
             </div>
             <div class="flex-grow-1">
-              <div class="stat-label text-white-75 small">Delayed</div>
+              <div class="stat-label text-white small">Delayed</div>
               <div class="stat-value text-white fw-bold">{{ delayedFlights || 0 }}</div>
             </div>
           </div>
@@ -537,24 +537,25 @@ export default {
 }
 
 .stat-card.stat-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
 }
 
 .stat-card.stat-success {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
 .stat-card.stat-info {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
 }
 
 .stat-card.stat-warning {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
 }
 
 .stat-icon {
   font-size: 1.5rem;
-  opacity: 0.8;
+  color: white;
+  opacity: 0.9;
 }
 
 .stat-value {

@@ -173,83 +173,109 @@
         <div class="tab-content" id="aircraftTabsContent">
           <!-- Overview Tab -->
           <div v-show="activeTab === 'overview'" id="overview" role="tabpanel">
-            <div class="row">
-              <!-- Left Column -->
-              <div class="col-lg-8">
-                <!-- Aircraft Information -->
-                <div class="mb-4">
-                  <h5 class="mb-3">Aircraft Information</h5>
-                  <div class="card border-0 bg-light">
-                    <div class="card-body">
-                      <div class="row g-3">
-                        <div class="col-md-6">
-                          <div class="info-item">
-                            <label class="info-label">Status</label>
-                            <div class="info-value">
-                              <span
-                                class="badge rounded-pill fs-6 px-3 py-2"
-                                :style="{
-                                  backgroundColor: aircraft.status_color + '20',
-                                  color: aircraft.status_color,
-                                  border: '1px solid ' + aircraft.status_color,
-                                }"
-                              >
-                                {{ aircraft.status?.name }}
-                              </span>
+            <!-- Comprehensive Aircraft Overview -->
+            <div class="row g-4">
+              <!-- Basic Information Section -->
+              <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0 text-dark">
+                      <i class="fas fa-plane me-2 text-muted"></i>Basic Aircraft Information
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-3">
+                      <!-- Registration & Identification -->
+                      <div class="col-lg-6">
+                        <h6 class="text-muted mb-3">
+                          <i class="fas fa-id-card me-2"></i>Identification
+                        </h6>
+                        <div class="row g-2">
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Registration Number</label>
+                              <div class="info-value fw-bold">{{ aircraft.registration_number }}</div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Serial Number</label>
+                              <div class="info-value">{{ aircraft.serial_number }}</div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Manufacturer</label>
+                              <div class="info-value">{{ aircraft.manufacturer?.name || 'N/A' }}</div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Model</label>
+                              <div class="info-value">{{ aircraft.model?.name || 'N/A' }}</div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Year of Manufacture</label>
+                              <div class="info-value">{{ aircraft.year_of_manufacture }} <span class="text-muted">({{ aircraft.age_in_years }} years old)</span></div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Home Base</label>
+                              <div class="info-value">{{ aircraft.home_base }}</div>
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-6">
-                          <div class="info-item">
-                            <label class="info-label">Home Base</label>
-                            <div class="info-value">
-                              {{ aircraft.home_base }}
+                      </div>
+
+                      <!-- Status & Operations -->
+                      <div class="col-lg-6">
+                        <h6 class="text-muted mb-3">
+                          <i class="fas fa-cogs me-2"></i>Status & Operations
+                        </h6>
+                        <div class="row g-2">
+                          <div class="col-md-12">
+                            <div class="info-item">
+                              <label class="info-label">Current Status</label>
+                              <div class="info-value">
+                                <span
+                                  class="badge rounded-pill fs-6 px-3 py-2"
+                                  :style="{
+                                    backgroundColor: aircraft.status_color + '20',
+                                    color: aircraft.status_color,
+                                    border: '1px solid ' + aircraft.status_color,
+                                  }"
+                                >
+                                  {{ aircraft.status?.name || 'N/A' }}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="info-item">
-                            <label class="info-label"
-                              >Year of Manufacture</label
-                            >
-                            <div class="info-value">
-                              {{ aircraft.year_of_manufacture }} ({{
-                                aircraft.age_in_years
-                              }}
-                              years old)
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Total Airframe Hours</label>
+                              <div class="info-value fw-bold">{{ formatHours(aircraft.total_airframe_hours) }} hrs</div>
                             </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="info-item">
-                            <label class="info-label"
-                              >Total Hours & Cycles</label
-                            >
-                            <div class="info-value">
-                              {{
-                                formatHours(aircraft.total_airframe_hours)
-                              }}
-                              hours • {{ aircraft.total_cycles }} cycles
+                          <div class="col-md-6">
+                            <div class="info-item">
+                              <label class="info-label">Total Cycles</label>
+                              <div class="info-value fw-bold">{{ aircraft.total_cycles || 0 }}</div>
                             </div>
                           </div>
-                        </div>
-                        <div
-                          v-if="aircraft.seating_configuration"
-                          class="col-md-12"
-                        >
-                          <div class="info-item">
-                            <label class="info-label"
-                              >Seating Configuration</label
-                            >
-                            <div class="info-value">
-                              {{ aircraft.seating_configuration }}
+                          <div class="col-md-6" v-if="aircraft.total_capacity">
+                            <div class="info-item">
+                              <label class="info-label">Total Capacity</label>
+                              <div class="info-value">{{ aircraft.total_capacity }}</div>
                             </div>
                           </div>
-                        </div>
-                        <div v-if="aircraft.notes" class="col-md-12">
-                          <div class="info-item">
-                            <label class="info-label">Notes</label>
-                            <div class="info-value">{{ aircraft.notes }}</div>
+                          <div class="col-md-6" v-if="aircraft.max_passengers">
+                            <div class="info-item">
+                              <label class="info-label">Max Passengers</label>
+                              <div class="info-value">{{ aircraft.max_passengers }}</div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -258,91 +284,340 @@
                 </div>
               </div>
 
-              <!-- Right Column -->
-              <div class="col-lg-4">
-                <!-- Compliance Status Card -->
-                <div class="card border-0 shadow-sm mb-3">
-                  <div class="card-header bg-white border-bottom-0 py-3">
-                    <h5 class="mb-0 fw-bold">
-                      <i class="fas fa-shield-alt text-success me-2"></i
-                      >Compliance Status
-                    </h5>
+              <!-- Technical Specifications Grid -->
+              <div class="col-lg-6">
+                <!-- Weight & Load Specifications -->
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-weight-hanging me-2 text-muted"></i>Weight & Load Specifications
+                    </h6>
                   </div>
-                  <div class="card-body text-center">
-                    <div class="compliance-chart mb-3">
-                      <div
-                        class="progress-circle"
-                        :style="`--progress: ${complianceStatus.compliance_percentage}`"
-                      >
-                        <div class="progress-text">
-                          <div class="percentage">
-                            {{ complianceStatus.compliance_percentage }}%
-                          </div>
-                          <div class="label small text-muted">Compliant</div>
+                  <div class="card-body">
+                    <div class="row g-2">
+                      <div class="col-md-6" v-if="aircraft.max_takeoff_weight">
+                        <div class="info-item">
+                          <label class="info-label small">Max Takeoff Weight</label>
+                          <div class="info-value fw-semibold">{{ formatWeight(aircraft.max_takeoff_weight) }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6" v-if="aircraft.max_landing_weight">
+                        <div class="info-item">
+                          <label class="info-label small">Max Landing Weight</label>
+                          <div class="info-value fw-semibold">{{ formatWeight(aircraft.max_landing_weight) }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6" v-if="aircraft.empty_weight">
+                        <div class="info-item">
+                          <label class="info-label small">Empty Weight</label>
+                          <div class="info-value">{{ formatWeight(aircraft.empty_weight) }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6" v-if="aircraft.useful_load">
+                        <div class="info-item">
+                          <label class="info-label small">Useful Load</label>
+                          <div class="info-value">{{ formatWeight(aircraft.useful_load) }}</div>
                         </div>
                       </div>
                     </div>
-                    <div class="row text-center">
-                      <div class="col-3">
-                        <div class="stat-number text-success">
-                          {{ complianceStatus.valid }}
+                    <div v-if="!aircraft.max_takeoff_weight && !aircraft.max_landing_weight && !aircraft.empty_weight && !aircraft.useful_load" class="text-muted text-center py-3">
+                      <i class="fas fa-info-circle me-2"></i>No weight specifications available
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <!-- Engine & Propulsion -->
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-cog me-2 text-muted"></i>Engine & Propulsion
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-2">
+                      <div class="col-md-8" v-if="aircraft.engine_type">
+                        <div class="info-item">
+                          <label class="info-label small">Engine Type</label>
+                          <div class="info-value fw-semibold">{{ aircraft.engine_type }}</div>
                         </div>
-                        <div class="stat-label small text-muted">Valid</div>
                       </div>
-                      <div class="col-3">
-                        <div class="stat-number text-warning">
-                          {{ complianceStatus.expiring }}
+                      <div class="col-md-4" v-if="aircraft.number_of_engines">
+                        <div class="info-item">
+                          <label class="info-label small">Number of Engines</label>
+                          <div class="info-value text-center">
+                            <span class="badge bg-secondary fs-6">{{ aircraft.number_of_engines }}</span>
+                          </div>
                         </div>
-                        <div class="stat-label small text-muted">Expiring</div>
                       </div>
-                      <div class="col-3">
-                        <div class="stat-number text-danger">
-                          {{ complianceStatus.expired }}
+                      <div class="col-md-12" v-if="aircraft.propeller_type">
+                        <div class="info-item">
+                          <label class="info-label small">Propeller Type</label>
+                          <div class="info-value">{{ aircraft.propeller_type }}</div>
                         </div>
-                        <div class="stat-label small text-muted">Expired</div>
                       </div>
-                      <div class="col-3">
-                        <div class="stat-number text-info">
-                          {{ complianceStatus.pending }}
+                      <div class="col-md-12" v-if="aircraft.fuel_capacity">
+                        <div class="info-item">
+                          <label class="info-label small">Fuel Capacity</label>
+                          <div class="info-value fw-semibold">{{ formatFuelCapacity(aircraft.fuel_capacity) }}</div>
                         </div>
-                        <div class="stat-label small text-muted">Pending</div>
+                      </div>
+                    </div>
+                    <div v-if="!aircraft.engine_type && !aircraft.number_of_engines && !aircraft.propeller_type && !aircraft.fuel_capacity" class="text-muted text-center py-3">
+                      <i class="fas fa-info-circle me-2"></i>No engine specifications available
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <!-- Performance Data -->
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-tachometer-alt me-2 text-muted"></i>Performance Data
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-2">
+                      <div class="col-md-6" v-if="aircraft.maximum_range">
+                        <div class="info-item">
+                          <label class="info-label small">Maximum Range</label>
+                          <div class="info-value fw-semibold">{{ aircraft.maximum_range }} NM</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6" v-if="aircraft.cruise_speed">
+                        <div class="info-item">
+                          <label class="info-label small">Cruise Speed</label>
+                          <div class="info-value fw-semibold">{{ aircraft.cruise_speed }} kts</div>
+                        </div>
+                      </div>
+                      <div class="col-md-12" v-if="aircraft.service_ceiling">
+                        <div class="info-item">
+                          <label class="info-label small">Service Ceiling</label>
+                          <div class="info-value fw-semibold">{{ formatAltitude(aircraft.service_ceiling) }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="!aircraft.maximum_range && !aircraft.cruise_speed && !aircraft.service_ceiling" class="text-muted text-center py-3">
+                      <i class="fas fa-info-circle me-2"></i>No performance data available
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <!-- Certification & Compliance -->
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-certificate me-2 text-muted"></i>Certification & Compliance
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-2">
+                      <div class="col-md-6" v-if="aircraft.aircraft_category">
+                        <div class="info-item">
+                          <label class="info-label small">Aircraft Category</label>
+                          <div class="info-value">{{ aircraft.aircraft_category }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6" v-if="aircraft.certification_basis">
+                        <div class="info-item">
+                          <label class="info-label small">Certification Basis</label>
+                          <div class="info-value">{{ aircraft.certification_basis }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-12" v-if="aircraft.certificate_of_airworthiness">
+                        <div class="info-item">
+                          <label class="info-label small">Certificate of Airworthiness</label>
+                          <div class="info-value fw-semibold">{{ aircraft.certificate_of_airworthiness }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6" v-if="aircraft.coa_issue_date">
+                        <div class="info-item">
+                          <label class="info-label small">CoA Issue Date</label>
+                          <div class="info-value">{{ formatDate(aircraft.coa_issue_date) }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6" v-if="aircraft.coa_expiry_date">
+                        <div class="info-item">
+                          <label class="info-label small">CoA Expiry Date</label>
+                          <div class="info-value" :class="getCOAExpiryClass(aircraft.coa_expiry_date)">
+                            {{ formatDate(aircraft.coa_expiry_date) }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12" v-if="aircraft.ifr_certified || aircraft.rvsm_approved">
+                        <div class="info-item">
+                          <label class="info-label small">Operational Approvals</label>
+                          <div class="info-value">
+                            <span v-if="aircraft.ifr_certified" class="badge bg-secondary me-1">IFR Certified</span>
+                            <span v-if="aircraft.rvsm_approved" class="badge bg-dark me-1">RVSM Approved</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12" v-if="aircraft.etops_rating">
+                        <div class="info-item">
+                          <label class="info-label small">ETOPS Rating</label>
+                          <div class="info-value">
+                            <span class="badge bg-secondary">{{ aircraft.etops_rating }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12" v-if="aircraft.noise_certification">
+                        <div class="info-item">
+                          <label class="info-label small">Noise Certification</label>
+                          <div class="info-value">{{ aircraft.noise_certification }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="!hasCertificationSpecs" class="text-muted text-center py-3">
+                      <i class="fas fa-info-circle me-2"></i>No certification data available
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Avionics & Systems -->
+              <div class="col-12" v-if="aircraft.avionics_suite">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-microchip me-2 text-muted"></i>Avionics & Systems
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="info-item">
+                      <label class="info-label">Avionics Suite</label>
+                      <div class="info-value">{{ aircraft.avionics_suite }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seating Configuration -->
+              <div class="col-12" v-if="aircraft.seating_configuration">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-chair me-2 text-muted"></i>Seating Configuration
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="info-item">
+                      <div class="info-value">{{ aircraft.seating_configuration }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aircraft Photos -->
+              <div class="col-12" v-if="aircraft.photos && aircraft.photos.length > 0">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-images me-2 text-muted"></i>Aircraft Photos ({{ aircraft.photos.length }})
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-3">
+                      <div
+                        v-for="(photo, index) in aircraft.photos"
+                        :key="index"
+                        class="col-md-3 col-sm-4 col-6"
+                      >
+                        <div class="photo-thumbnail">
+                          <img
+                            :src="`/storage/${photo}`"
+                            :alt="`Aircraft ${aircraft.registration_number} photo ${index + 1}`"
+                            class="img-fluid rounded shadow-sm cursor-pointer"
+                            style="height: 150px; width: 100%; object-fit: cover;"
+                            @click="showPhotoModal(photo)"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <!-- Photos Card -->
-                <div
-                  v-if="aircraft.photos && aircraft.photos.length > 0"
-                  class="card border-0 shadow-sm"
-                >
-                  <div class="card-header bg-white border-bottom-0 py-3">
-                    <h5 class="mb-0 fw-bold">
-                      <i class="fas fa-images text-info me-2"></i>Photos
-                    </h5>
+              <!-- Compliance Status Overview -->
+              <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-shield-alt me-2 text-muted"></i>Document Compliance Status
+                    </h6>
                   </div>
                   <div class="card-body">
-                    <div class="photo-gallery">
-                      <div
-                        v-for="(photo, index) in aircraft.photos"
-                        :key="index"
-                        class="photo-thumbnail mb-2"
-                      >
-                        <img
-                          :src="`/storage/${photo}`"
-                          :alt="`Aircraft ${
-                            aircraft.registration_number
-                          } photo ${index + 1}`"
-                          class="img-fluid rounded cursor-pointer"
-                          @click="showPhotoModal(photo)"
-                        />
+                    <div class="row text-center g-3">
+                      <div class="col-md-3 col-6">
+                        <div class="compliance-stat">
+                          <div class="stat-number text-success display-6 fw-bold">{{ complianceStatus.valid }}</div>
+                          <div class="stat-label text-muted">Valid Documents</div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-6">
+                        <div class="compliance-stat">
+                          <div class="stat-number text-warning display-6 fw-bold">{{ complianceStatus.expiring }}</div>
+                          <div class="stat-label text-muted">Expiring Soon</div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-6">
+                        <div class="compliance-stat">
+                          <div class="stat-number text-danger display-6 fw-bold">{{ complianceStatus.expired }}</div>
+                          <div class="stat-label text-muted">Expired</div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-6">
+                        <div class="compliance-stat">
+                          <div class="stat-number text-info display-6 fw-bold">{{ complianceStatus.pending }}</div>
+                          <div class="stat-label text-muted">Pending Review</div>
+                        </div>
                       </div>
                     </div>
+                    <div class="row mt-3">
+                      <div class="col-12 text-center">
+                        <div class="progress" style="height: 10px;">
+                          <div
+                            class="progress-bar bg-secondary"
+                            role="progressbar"
+                            :style="`width: ${complianceStatus.compliance_percentage}%`"
+                            :aria-valuenow="complianceStatus.compliance_percentage"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                        <div class="mt-2">
+                          <span class="text-muted">Overall Compliance: </span>
+                          <span class="fw-bold" :class="complianceStatus.compliance_percentage >= 80 ? 'text-success' : complianceStatus.compliance_percentage >= 60 ? 'text-warning' : 'text-danger'">
+                            {{ complianceStatus.compliance_percentage }}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional Notes -->
+              <div class="col-12" v-if="aircraft.notes">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-light border-bottom">
+                    <h6 class="mb-0 text-dark">
+                      <i class="fas fa-sticky-note me-2 text-muted"></i>Additional Notes
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="info-value">{{ aircraft.notes }}</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
 
           <!-- Maintenance Tab -->
           <div
@@ -2158,9 +2433,55 @@ const statusUpdateForm = ref({
   notes: "",
 });
 
+// Computed properties for aviation specs visibility
+const hasAviationSpecs = computed(() => {
+  return hasWeightSpecs.value || hasEngineSpecs.value || hasCertificationSpecs.value;
+});
+
+const hasWeightSpecs = computed(() => {
+  const aircraft = props.aircraft;
+  return aircraft.max_takeoff_weight || aircraft.max_landing_weight || aircraft.empty_weight ||
+         aircraft.useful_load || aircraft.fuel_capacity || aircraft.maximum_range ||
+         aircraft.cruise_speed || aircraft.service_ceiling;
+});
+
+const hasEngineSpecs = computed(() => {
+  const aircraft = props.aircraft;
+  return aircraft.engine_type || aircraft.number_of_engines || aircraft.avionics_suite || aircraft.propeller_type;
+});
+
+const hasCertificationSpecs = computed(() => {
+  const aircraft = props.aircraft;
+  return aircraft.aircraft_category || aircraft.certification_basis || aircraft.certificate_of_airworthiness ||
+         aircraft.ifr_certified || aircraft.rvsm_approved || aircraft.etops_rating || aircraft.noise_certification;
+});
+
 // Methods
 const formatHours = (hours) => {
   return hours ? parseFloat(hours).toLocaleString() : "0";
+};
+
+const formatWeight = (weight) => {
+  return weight ? `${parseFloat(weight).toLocaleString()} kg` : "0 kg";
+};
+
+const formatFuelCapacity = (capacity) => {
+  return capacity ? `${parseFloat(capacity).toLocaleString()} L` : "0 L";
+};
+
+const formatAltitude = (altitude) => {
+  return altitude ? `${parseInt(altitude).toLocaleString()} ft` : "0 ft";
+};
+
+const getCOAExpiryClass = (expiryDate) => {
+  if (!expiryDate) return '';
+  const expiry = new Date(expiryDate);
+  const today = new Date();
+  const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+  if (daysUntilExpiry < 0) return 'text-danger fw-bold'; // Expired
+  if (daysUntilExpiry <= 30) return 'text-warning fw-bold'; // Expiring soon
+  return 'text-success'; // Valid
 };
 
 const formatDate = (date) => {

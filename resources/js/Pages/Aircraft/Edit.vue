@@ -222,6 +222,232 @@
                   </div>
                 </div>
 
+                <!-- Capacity Information -->
+                <div class="col-md-6 mb-3">
+                  <label for="totalCapacity" class="form-label">Total Capacity</label>
+                  <input
+                    v-model="form.total_capacity"
+                    type="number"
+                    id="totalCapacity"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.total_capacity }"
+                    min="1"
+                    placeholder="Total seats/capacity"
+                  />
+                  <div v-if="errors.total_capacity" class="invalid-feedback">
+                    {{ errors.total_capacity }}
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="maxPassengers" class="form-label">Max Passengers</label>
+                  <input
+                    v-model="form.max_passengers"
+                    type="number"
+                    id="maxPassengers"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.max_passengers }"
+                    min="1"
+                    placeholder="Maximum passengers"
+                  />
+                  <div v-if="errors.max_passengers" class="invalid-feedback">
+                    {{ errors.max_passengers }}
+                  </div>
+                </div>
+
+                <!-- Weight Specifications -->
+                <div class="col-md-6 mb-3">
+                  <label for="maxTakeoffWeight" class="form-label">Max Takeoff Weight (kg)</label>
+                  <input
+                    v-model="form.max_takeoff_weight"
+                    type="number"
+                    id="maxTakeoffWeight"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.max_takeoff_weight }"
+                    step="0.01"
+                    min="0"
+                    placeholder="Maximum takeoff weight"
+                  />
+                  <div v-if="errors.max_takeoff_weight" class="invalid-feedback">
+                    {{ errors.max_takeoff_weight }}
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="emptyWeight" class="form-label">Empty Weight (kg)</label>
+                  <input
+                    v-model="form.empty_weight"
+                    type="number"
+                    id="emptyWeight"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.empty_weight }"
+                    step="0.01"
+                    min="0"
+                    placeholder="Empty weight"
+                  />
+                  <div v-if="errors.empty_weight" class="invalid-feedback">
+                    {{ errors.empty_weight }}
+                  </div>
+                </div>
+
+                <!-- Engine Information -->
+                <div class="col-md-8 mb-3">
+                  <label for="engineType" class="form-label">Engine Type</label>
+                  <input
+                    v-model="form.engine_type"
+                    type="text"
+                    id="engineType"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.engine_type }"
+                    placeholder="e.g., CFM56-7B27, PW4077"
+                  />
+                  <div v-if="errors.engine_type" class="invalid-feedback">
+                    {{ errors.engine_type }}
+                  </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="numberOfEngines" class="form-label">Number of Engines</label>
+                  <select
+                    v-model="form.number_of_engines"
+                    id="numberOfEngines"
+                    class="form-select custom-select"
+                    :class="{ 'is-invalid': errors.number_of_engines }"
+                  >
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                  <div v-if="errors.number_of_engines" class="invalid-feedback">
+                    {{ errors.number_of_engines }}
+                  </div>
+                </div>
+
+                <!-- Performance Data -->
+                <div class="col-md-4 mb-3">
+                  <label for="fuelCapacity" class="form-label">Fuel Capacity (L)</label>
+                  <input
+                    v-model="form.fuel_capacity"
+                    type="number"
+                    id="fuelCapacity"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.fuel_capacity }"
+                    step="0.01"
+                    min="0"
+                    placeholder="Fuel capacity"
+                  />
+                  <div v-if="errors.fuel_capacity" class="invalid-feedback">
+                    {{ errors.fuel_capacity }}
+                  </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="maximumRange" class="form-label">Maximum Range (NM)</label>
+                  <input
+                    v-model="form.maximum_range"
+                    type="number"
+                    id="maximumRange"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.maximum_range }"
+                    min="0"
+                    placeholder="Nautical miles"
+                  />
+                  <div v-if="errors.maximum_range" class="invalid-feedback">
+                    {{ errors.maximum_range }}
+                  </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="cruiseSpeed" class="form-label">Cruise Speed (kts)</label>
+                  <input
+                    v-model="form.cruise_speed"
+                    type="number"
+                    id="cruiseSpeed"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.cruise_speed }"
+                    min="0"
+                    placeholder="Knots"
+                  />
+                  <div v-if="errors.cruise_speed" class="invalid-feedback">
+                    {{ errors.cruise_speed }}
+                  </div>
+                </div>
+
+                <!-- Certification Information -->
+                <div class="col-md-6 mb-3">
+                  <label for="aircraftCategory" class="form-label">Aircraft Category</label>
+                  <select
+                    v-model="form.aircraft_category"
+                    id="aircraftCategory"
+                    class="form-select custom-select"
+                    :class="{ 'is-invalid': errors.aircraft_category }"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Commuter">Commuter</option>
+                    <option value="Aerobatic">Aerobatic</option>
+                    <option value="Utility">Utility</option>
+                  </select>
+                  <div v-if="errors.aircraft_category" class="invalid-feedback">
+                    {{ errors.aircraft_category }}
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="certificateOfAirworthiness" class="form-label">Certificate of Airworthiness</label>
+                  <input
+                    v-model="form.certificate_of_airworthiness"
+                    type="text"
+                    id="certificateOfAirworthiness"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.certificate_of_airworthiness }"
+                    placeholder="C of A number"
+                  />
+                  <div v-if="errors.certificate_of_airworthiness" class="invalid-feedback">
+                    {{ errors.certificate_of_airworthiness }}
+                  </div>
+                </div>
+
+                <!-- Operational Certifications -->
+                <div class="col-md-6 mb-3">
+                  <div class="form-check">
+                    <input
+                      v-model="form.ifr_certified"
+                      type="checkbox"
+                      id="ifrCertified"
+                      class="form-check-input"
+                      :class="{ 'is-invalid': errors.ifr_certified }"
+                    />
+                    <label for="ifrCertified" class="form-check-label">
+                      IFR Certified
+                    </label>
+                    <div v-if="errors.ifr_certified" class="invalid-feedback">
+                      {{ errors.ifr_certified }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <div class="form-check">
+                    <input
+                      v-model="form.rvsm_approved"
+                      type="checkbox"
+                      id="rvsmApproved"
+                      class="form-check-input"
+                      :class="{ 'is-invalid': errors.rvsm_approved }"
+                    />
+                    <label for="rvsmApproved" class="form-check-label">
+                      RVSM Approved
+                    </label>
+                    <div v-if="errors.rvsm_approved" class="invalid-feedback">
+                      {{ errors.rvsm_approved }}
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Notes -->
                 <div class="col-12 mb-3">
                   <label for="notes" class="form-label">Notes</label>
@@ -432,6 +658,29 @@ const form = useForm({
   status_id: props.aircraft.status_id || '',
   home_base: props.aircraft.home_base || '',
   seating_configuration: props.aircraft.seating_configuration || '',
+  total_capacity: props.aircraft.total_capacity || '',
+  max_passengers: props.aircraft.max_passengers || '',
+  max_takeoff_weight: props.aircraft.max_takeoff_weight || '',
+  max_landing_weight: props.aircraft.max_landing_weight || '',
+  empty_weight: props.aircraft.empty_weight || '',
+  useful_load: props.aircraft.useful_load || '',
+  engine_type: props.aircraft.engine_type || '',
+  number_of_engines: props.aircraft.number_of_engines || '',
+  fuel_capacity: props.aircraft.fuel_capacity || '',
+  service_ceiling: props.aircraft.service_ceiling || '',
+  maximum_range: props.aircraft.maximum_range || '',
+  cruise_speed: props.aircraft.cruise_speed || '',
+  aircraft_category: props.aircraft.aircraft_category || '',
+  certification_basis: props.aircraft.certification_basis || '',
+  ifr_certified: props.aircraft.ifr_certified || false,
+  rvsm_approved: props.aircraft.rvsm_approved || false,
+  etops_rating: props.aircraft.etops_rating || '',
+  certificate_of_airworthiness: props.aircraft.certificate_of_airworthiness || '',
+  coa_issue_date: props.aircraft.coa_issue_date || '',
+  coa_expiry_date: props.aircraft.coa_expiry_date || '',
+  avionics_suite: props.aircraft.avionics_suite || '',
+  propeller_type: props.aircraft.propeller_type || '',
+  noise_certification: props.aircraft.noise_certification || '',
   photos: [...(props.aircraft.photos || [])],
   notes: props.aircraft.notes || ''
 });
@@ -565,6 +814,29 @@ const resetForm = () => {
     form.status_id = props.aircraft.status_id || '';
     form.home_base = props.aircraft.home_base || '';
     form.seating_configuration = props.aircraft.seating_configuration || '';
+    form.total_capacity = props.aircraft.total_capacity || '';
+    form.max_passengers = props.aircraft.max_passengers || '';
+    form.max_takeoff_weight = props.aircraft.max_takeoff_weight || '';
+    form.max_landing_weight = props.aircraft.max_landing_weight || '';
+    form.empty_weight = props.aircraft.empty_weight || '';
+    form.useful_load = props.aircraft.useful_load || '';
+    form.engine_type = props.aircraft.engine_type || '';
+    form.number_of_engines = props.aircraft.number_of_engines || '';
+    form.fuel_capacity = props.aircraft.fuel_capacity || '';
+    form.service_ceiling = props.aircraft.service_ceiling || '';
+    form.maximum_range = props.aircraft.maximum_range || '';
+    form.cruise_speed = props.aircraft.cruise_speed || '';
+    form.aircraft_category = props.aircraft.aircraft_category || '';
+    form.certification_basis = props.aircraft.certification_basis || '';
+    form.ifr_certified = props.aircraft.ifr_certified || false;
+    form.rvsm_approved = props.aircraft.rvsm_approved || false;
+    form.etops_rating = props.aircraft.etops_rating || '';
+    form.certificate_of_airworthiness = props.aircraft.certificate_of_airworthiness || '';
+    form.coa_issue_date = props.aircraft.coa_issue_date || '';
+    form.coa_expiry_date = props.aircraft.coa_expiry_date || '';
+    form.avionics_suite = props.aircraft.avionics_suite || '';
+    form.propeller_type = props.aircraft.propeller_type || '';
+    form.noise_certification = props.aircraft.noise_certification || '';
     form.notes = props.aircraft.notes || '';
     form.photos = [...(props.aircraft.photos || [])];
 
